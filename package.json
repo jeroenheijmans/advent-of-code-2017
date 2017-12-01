@@ -1,0 +1,17 @@
+{
+  "name": "advent-of-code-2017",
+  "version": "1.0.0",
+  "description": "Advent of Code 2017 solutions by Jeroen Heijmans",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeroenheijmans/advent-of-code-2017.git"
+  },
+  "author": "Jeroen Heijmans",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jeroenheijmans/advent-of-code-2017/issues"
+  },
+  "homepage": "https://github.com/jeroenheijmans/advent-of-code-2017#readme",
+  "devDependencies": {}
+}
