@@ -9,13 +9,13 @@
 
             for (let puzzle of day.puzzles) {
                 puzzle.testSets.forEach((set, idx) => {
-                    QUnit.test(`Puzzle {puzzle.title}, Test Set ${idx}`, assert => {
-                        assert.strictEqual(set.expectedAnswer, puzzle.getSolution(set.data));
+                    QUnit.test(`Expect ${set.expectedAnswer} for puzzle ${puzzle.title}, testSets[${idx}]`, assert => {
+                        assert.strictEqual(puzzle.getSolution(set.data), set.expectedAnswer);
                     });
                 });
 
                 QUnit.test(`Puzzle {puzzle.title}, Actual Problem`, assert => {
-                    assert.strictEqual(puzzle.expectedAnswer, puzzle.getSolution(day.actualInput));
+                    assert.strictEqual(puzzle.getSolution(day.actualInput), puzzle.expectedAnswer);
                 });
             }
         }
