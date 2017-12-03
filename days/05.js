@@ -1,5 +1,5 @@
 (function(aoc) {
-    aoc.days["04"] = {
+    aoc.days["05"] = {
         actualInput: [],
 
         puzzles:[{
