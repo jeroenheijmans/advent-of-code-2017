@@ -38,17 +38,70 @@
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
-            expectedAnswer: -1,
+            expectedAnswer: 312453,
             testSets: [
-                { expectedAnswer: 0, data: [] },
+                { expectedAnswer: 10, data: 5 },
+                { expectedAnswer: 11, data: 10 },
+                { expectedAnswer: 23, data: 11 },
+                { expectedAnswer: 26, data: 25 },
             ],
             getSolution: data => {
-                var result = 0;
+                // Apologies, but after a long day of (Sunday) work I couldn't think
+                // of a "good" solution, so I'll just imperatively crunch to the right
+                // answer like this... :'(
+                
+                var grid = [
+                    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,1,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0,0,0,0]
+                ];
 
-                return result;
+                var x = 7, y = 6;
+                var ringNr = 1;
+                var direction = "right";
+
+                function getSumFor(a,b) {
+                    var result = 0;
+                    for(let i=-1; i<2; i++) {
+                        for(let j=-1; j<2; j++) {
+                            result += grid[a+i][b+j];
+                        }
+                    }
+                    return result;
+                }
+
+                while (x < 12 && y < 12 && x > 0 && y > 0) {
+                    grid[x][y] = getSumFor(x, y);
+                    
+                    if (grid[x][y] > data) {
+                        return grid[x][y];
+                    }
+                    
+                    if (grid[x-1][y] !== 0 && grid[x][y-1] === 0) {
+                        y--;
+                    } else if (grid[x-1][y] === 0 && grid[x][y+1] !== 0) {
+                        x--;
+                    } else if (grid[x+1][y] !== 0 && grid[x][y+1] === 0) {
+                        y++;
+                    } else {
+                        x++;
+                    }
+                }
+
+                return "NOT FOUND";
             }
-        },*/]
+        }]
     };
 }(window.aoc = window.aoc || {days:{}}));
