@@ -517,7 +517,7 @@
 
         puzzles:[{
             title: "Puzzle 1",
-            expectedAnswer: -566,
+            expectedAnswer: 466,
             testSets: [
                 { expectedAnswer: 2, data: [
                     "aa bb cc dd ee",
@@ -530,17 +530,25 @@
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
-            expectedAnswer: -1,
+            expectedAnswer: 251,
             testSets: [
-                { expectedAnswer: 0, data: [] },
+                { expectedAnswer: 3, data: [
+                    "abcde fghij",
+                    "abcde xyz ecdab",
+                    "a ab abc abd abf abj",
+                    "iiii oiii ooii oooi oooo",
+                    "oiii ioii iioi iiio"
+                ] },
             ],
             getSolution: data => {
-                var result = 0;
-
-                return result;
+                return data
+                    .map(phrase => phrase.split(" "))
+                    .map(words => words.map(word => word.split("").sort((a,b) => a.localeCompare(b)).join("")))
+                    .filter(words => words.length === new Set(words).size)
+                    .length;
             }
-        }*/]
+        }]
     };
 }(window.aoc = window.aoc || {days:{}}));
