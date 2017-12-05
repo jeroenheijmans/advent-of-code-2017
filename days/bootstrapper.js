@@ -10,13 +10,16 @@
             for (let puzzle of day.puzzles) {
                 for (let idx = puzzle.testSets.length-1; idx > 0; idx--) {
                     let set = puzzle.testSets[idx];
+                    let dumbClone = JSON.parse(JSON.stringify(set.data));                    
+
                     QUnit.test(`Expect ${set.expectedAnswer} for puzzle ${puzzle.title}, testSets[${idx}]`, assert => {
-                        assert.strictEqual(puzzle.getSolution(set.data), set.expectedAnswer);
+                        assert.strictEqual(puzzle.getSolution(dumbClone), set.expectedAnswer);
                     });
                 }
 
                 QUnit.test(`Puzzle {puzzle.title}, Actual Problem`, assert => {
-                    assert.strictEqual(puzzle.getSolution(day.actualInput), puzzle.expectedAnswer);
+                    let dumbClone = JSON.parse(JSON.stringify(day.actualInput));
+                    assert.strictEqual(puzzle.getSolution(dumbClone), puzzle.expectedAnswer);
                 });
             }
         }
