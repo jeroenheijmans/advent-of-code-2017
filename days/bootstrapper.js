@@ -8,11 +8,12 @@
             let day = aoc.days[dayKey];
 
             for (let puzzle of day.puzzles) {
-                puzzle.testSets.forEach((set, idx) => {
+                for (let idx = puzzle.testSets.length-1; idx > 0; idx--) {
+                    let set = puzzle.testSets[idx];
                     QUnit.test(`Expect ${set.expectedAnswer} for puzzle ${puzzle.title}, testSets[${idx}]`, assert => {
                         assert.strictEqual(puzzle.getSolution(set.data), set.expectedAnswer);
                     });
-                });
+                }
 
                 QUnit.test(`Puzzle {puzzle.title}, Actual Problem`, assert => {
                     assert.strictEqual(puzzle.getSolution(day.actualInput), puzzle.expectedAnswer);
