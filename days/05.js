@@ -4,7 +4,7 @@
 
         puzzles:[{
             title: "Puzzle 1",
-            expectedAnswer: -1,
+            expectedAnswer: 356945,
             testSets: [
                 { expectedAnswer: 5, data: [
                     0,
@@ -30,17 +30,32 @@
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
-            expectedAnswer: -1,
+            expectedAnswer: 28372145,
             testSets: [
-                { expectedAnswer: 0, data: "" },
+                { expectedAnswer: 10, data: [
+                    0,
+                    3,
+                    0,
+                    1,
+                    -3
+                ] },
             ],
             getSolution: data => {
-                var result = 0;
+                var steps = 0;
+                var idx = 0;
+                var offset = data[0];
 
-                return result;
+                while (idx >= 0 && idx < data.length) {
+                    let jump = data[idx];
+                    data[idx] >= 3 ? data[idx]-- : data[idx]++;
+                    idx += jump;
+                    steps++;
+                } 
+
+                return steps;
             }
-        }*/]
+        }]
     };
 }(window.aoc = window.aoc || {days:{}}));
