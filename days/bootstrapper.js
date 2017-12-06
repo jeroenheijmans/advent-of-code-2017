@@ -8,16 +8,16 @@
             let day = aoc.days[dayKey];
 
             for (let puzzle of day.puzzles) {
-                for (let idx = 0; idx < puzzle.testSets.length; idx++) {
+                for (let idx = puzzle.testSets.length - 1; idx >= 0; idx--) {
                     let set = puzzle.testSets[idx];
                     let dumbClone = JSON.parse(JSON.stringify(set.data));                    
 
-                    QUnit.test(`Expect ${set.expectedAnswer} for puzzle ${puzzle.title}, testSets[${idx}]`, assert => {
+                    QUnit.test(`${puzzle.title}, testSets[${idx}] should give ${set.expectedAnswer}`, assert => {
                         assert.strictEqual(puzzle.getSolution(dumbClone), set.expectedAnswer);
                     });
                 }
 
-                QUnit.test(`Puzzle {puzzle.title}, Actual Problem`, assert => {
+                QUnit.test(`${puzzle.title}, actual puzzle input should give the correct answer`, assert => {
                     let dumbClone = JSON.parse(JSON.stringify(day.actualInput));
                     assert.strictEqual(puzzle.getSolution(dumbClone), puzzle.expectedAnswer);
                 });
