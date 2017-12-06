@@ -8,7 +8,7 @@
             let day = aoc.days[dayKey];
 
             for (let puzzle of day.puzzles) {
-                for (let idx = puzzle.testSets.length-1; idx > 0; idx--) {
+                for (let idx = puzzle.testSets.length-1; idx => 0; idx--) {
                     let set = puzzle.testSets[idx];
                     let dumbClone = JSON.parse(JSON.stringify(set.data));                    
 
