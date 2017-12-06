@@ -1,4 +1,6 @@
 (function(aoc) {
+    const MaxNrOfLoops = 10000;
+
     aoc.days["06"] = {
         actualInput: [2,8,8,5,4,2,3,1,5,5,1,2,15,13,5,14],
 
@@ -10,14 +12,12 @@
             ],
             getSolution: data => {
                 let seenConfigurations = [
-                    // Ininitial config:
-                    JSON.stringify(data.slice(0))
+                    JSON.stringify(data)
                 ];
 
                 let nrOfLoops = 0;
-                
-                do {
-                    var tbl = JSON.stringify(data);
+
+                while (nrOfLoops++ < MaxNrOfLoops) {
                     let max = Math.max.apply(Math, data);
                     let idx = data.indexOf(max);
                     let redistribute = data[idx];
@@ -25,24 +25,21 @@
 
                     while (redistribute > 0) {
                         redistribute--;
-                        idx ++;
+                        idx++;
                         if (idx >= data.length) {
                             idx = 0;
                         }
                         data[idx]++;
                     }
 
-                    nrOfLoops++;
-
                     let hash = JSON.stringify(data);
 
-                    if (seenConfigurations.indexOf(JSON.stringify(data)) >= 0) {
-                        return nrOfLoops;
+                    if (seenConfigurations.indexOf(hash) >= 0) {
+                        return seenConfigurations.length;
                     }
 
                     seenConfigurations.push(hash);
-
-                } while (nrOfLoops < 100000);
+                }
 
                 return "NOT FOUND";
             }
@@ -56,14 +53,12 @@
             ],
             getSolution: data => {
                 let seenConfigurations = [
-                    // Ininitial config:
-                    JSON.stringify(data.slice(0))
+                    JSON.stringify(data)
                 ];
 
                 let nrOfLoops = 0;
-                
-                do {
-                    var tbl = JSON.stringify(data);
+
+                while (nrOfLoops++ < MaxNrOfLoops) {
                     let max = Math.max.apply(Math, data);
                     let idx = data.indexOf(max);
                     let redistribute = data[idx];
@@ -71,24 +66,21 @@
 
                     while (redistribute > 0) {
                         redistribute--;
-                        idx ++;
+                        idx++;
                         if (idx >= data.length) {
                             idx = 0;
                         }
                         data[idx]++;
                     }
 
-                    nrOfLoops++;
-
                     let hash = JSON.stringify(data);
 
-                    if (seenConfigurations.indexOf(JSON.stringify(data)) >= 0) {
-                        return nrOfLoops - seenConfigurations.indexOf(JSON.stringify(data));
+                    if (seenConfigurations.indexOf(hash) >= 0) {
+                        return seenConfigurations.length - seenConfigurations.indexOf(hash);
                     }
 
                     seenConfigurations.push(hash);
-
-                } while (nrOfLoops < 100000);
+                }
 
                 return "NOT FOUND";
             }
