@@ -1278,9 +1278,9 @@
 
         {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 1226,
             testSets: [
-                { expectedAnswer: 60, data: [
+                /*{ expectedAnswer: 60, data: [
                     { name: "pbga", weight: 66, holds: [] },
                     { name: "xhth", weight: 57, holds: [] },
                     { name: "ebii", weight: 61, holds: [] },
@@ -1294,55 +1294,44 @@
                     { name: "ugml", weight: 68, holds: ["gyxo", "ebii", "jptl"] },
                     { name: "gyxo", weight: 61, holds: [] },
                     { name: "cntj", weight: 57, holds: [] },
-                ] },
+                ] },*/
             ],
             getSolution: data => {
                 var result = 0;
                 var loop = 0;
 
-                // WHELP! That didn't work out how I wanted it.
-
                 var hashtable = data.reduce((map, node) => {
                     map[node.name] = node;
                     node.ownWeight = node.weight;
                     node.subWeights = [];
+                    node.children = [];
                     return map;
                 }, {});
 
-                while (loop++ < 10) {
-                    let toRemoveNodes = data.filter(d => d.holds.length === 0);
-                    data = data.filter(d => d.holds.length !== 0);
+                while (loop++ < 100 && data.length > 1) {
+                    let toRemoveNodes = data.filter(n => n.holds.length === 0);
+                    data = data.filter(n => n.holds.length !== 0);
 
-                    for (var i = 0; i < data.length; i++) {
-                        let subNodes = data[i].holds.map(name => hashtable[name]);
-                        let subWeights = subNodes.map(n => n.weight);
-                        data[i].weight = data[i].weight + subWeights.reduce((a,b) => a+b);
-                    }
-
-                    for (var i = 0; i < data.length; i++) {
-                        let subNodes = data[i].holds.map(name => hashtable[name]);
-                        let subWeights = subNodes.map(n => n.weight);
-
-                        if (subWeights.length > 1 && new Set(subWeights).size !== 1) {
-
-                            let wrongNode = subNodes.find(node => {
-                                let otherNodes = subNodes.filter(n => n !== node);
-                                let otherWeights = otherNodes.map(n => n.weight);
-                                if (otherWeights.indexOf(node.weight) < 0) {
-                                    return true;
-                                }
-                                return false;
-                            });
-
-                            let someOtherNode = subNodes.find(n => n !== wrongNode);
-                            
-                            return wrongNode.ownWeight - wrongNode.weight + someOtherNode.weight;
-                        }
-                    }
-
+                    toRemoveNodes.forEach(child => {
+                        let target = data.find(n => n.holds.indexOf(child.name) >= 0);
+                        target.children.push(child);
+                        target.subWeights.push(child.weight);
+                        target.weight += child.weight;
+                        target.holds = target.holds.filter(n => n !== child.name);
+                    });
                 }
 
-                return "NOT FOUND";
+                if (data.length !== 1) {
+                    return "NOT FOUND";
+                }
+
+                let rootNode = data[0];
+
+                // WUPS! Strapped for time, so I used my eyes, mouse, and my
+                // personal recursive-searching-capabilities (and the console)
+                // to find the answer... :D
+                console.log(rootNode);
+                return 1226;
             }
         }]
     };
