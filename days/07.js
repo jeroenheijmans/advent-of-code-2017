@@ -1280,7 +1280,7 @@
             title: "Puzzle 2",
             expectedAnswer: 1226,
             testSets: [
-                /*{ expectedAnswer: 60, data: [
+                { expectedAnswer: 60, data: [
                     { name: "pbga", weight: 66, holds: [] },
                     { name: "xhth", weight: 57, holds: [] },
                     { name: "ebii", weight: 61, holds: [] },
@@ -1294,7 +1294,7 @@
                     { name: "ugml", weight: 68, holds: ["gyxo", "ebii", "jptl"] },
                     { name: "gyxo", weight: 61, holds: [] },
                     { name: "cntj", weight: 57, holds: [] },
-                ] },*/
+                ] },
             ],
             getSolution: data => {
                 var result = 0;
@@ -1325,13 +1325,48 @@
                     return "NOT FOUND";
                 }
 
-                let rootNode = data[0];
+                function getChildWeights(target) {
+                    let buckets = target.children.reduce((buckets, child) => {
+                        if (buckets.hasOwnProperty(child.weight)) {
+                            buckets[child.weight].push(child);
+                        } else {
+                            buckets[child.weight] = [child];
+                        }
+                        return buckets;
+                    }, {});
 
-                // WUPS! Strapped for time, so I used my eyes, mouse, and my
-                // personal recursive-searching-capabilities (and the console)
-                // to find the answer... :D
-                console.log(rootNode);
-                return 1226;
+                    let keys = Object.keys(buckets);
+
+                    if (buckets[keys[0]].length === 1) {
+                        return {
+                            incorrectChildren: buckets[keys[0]],
+                            correctChildren: buckets[keys[1]]
+                        };
+                    } else {
+                        return {
+                            incorrectChildren: buckets[keys[1]],
+                            correctChildren: buckets[keys[0]]
+                        };
+                    }
+                }
+
+                function getUnbalancedNode(target, parent) {
+                    let childWeights = new Set(target.subWeights);
+                    
+                    if (childWeights.size === 1) {
+                        let x = getChildWeights(parent);
+                        target.correctWeight = target.ownWeight + x.correctChildren[0].weight - x.incorrectChildren[0].weight;
+                        return target;
+                    }
+
+                    let weightsInfo = getChildWeights(target);
+
+                    return getUnbalancedNode(weightsInfo.incorrectChildren[0], target);
+                }
+
+                let unbalancedNode = getUnbalancedNode(data[0], null);
+                
+                return unbalancedNode.correctWeight;
             }
         }]
     };
