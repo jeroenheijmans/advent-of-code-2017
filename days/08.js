@@ -1005,7 +1005,7 @@
 
         puzzles:[{
             title: "Puzzle 1",
-            expectedAnswer: null,
+            expectedAnswer: 5215,
             testSets: [
                 { expectedAnswer: 1, data: [
                     "b inc 5 if a > 1",
@@ -1062,22 +1062,74 @@
                     }
                 }
 
-                return Math.max.apply(Math.max, Object.keys(memory).map(key => memory[key]));
-                    
+                return Math.max.apply(Math.max, Object.keys(memory).map(key => memory[key]));                    
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 6419,
             testSets: [
-                { expectedAnswer: null, data: [] },
+                { expectedAnswer: 10, data: [
+                    "b inc 5 if a > 1",
+                    "a inc 1 if b < 5",
+                    "c dec -10 if a >= 1",
+                    "c inc -20 if c == 10",
+                ] },
             ],
             getSolution: data => {
-                var result = 0;
+                let maxValueSeen = 0;
+                let memory = {};
 
-                return result;
+                for (let line of data) {
+                    let match = /([a-z]+) (inc|dec) (-?\d+) if ([a-z]+) ([^ ]+) (-?\d+)/.exec(line);
+
+                    let register = match[1];
+                    let op = match[2];
+                    let diff = parseInt(match[3], 10);
+                    let registerForCondition = match[4];
+                    let opForCondition = match[5];
+                    let comparisonValue = parseInt(match[6], 10);
+
+                    // console.table([register,op,diff,registerForCondition,opForCondition,comparisonValue]);
+
+                    memory[register] = memory[register] || 0;
+                    memory[registerForCondition] = memory[registerForCondition] || 0;
+
+                    let conditional = false;
+
+                    switch(opForCondition) {
+                        case ">":
+                            conditional = memory[registerForCondition] > comparisonValue;
+                            break;
+                        case "<":
+                            conditional = memory[registerForCondition] < comparisonValue;
+                            break;
+                        case ">=":
+                            conditional = memory[registerForCondition] >= comparisonValue;
+                            break;
+                        case "<=":
+                            conditional = memory[registerForCondition] <= comparisonValue;
+                            break;
+                        case "==":
+                            conditional = memory[registerForCondition] === comparisonValue;
+                            break;
+                        case "!=":
+                            conditional = memory[registerForCondition] != comparisonValue;
+                            break;
+                        default:
+                            return "HUH!?";
+                    }
+
+                    if (conditional) {
+                        memory[register] += (op === "inc" ? +1 : -1) * diff;
+
+                        maxValueSeen = memory[register] > maxValueSeen ? memory[register] : maxValueSeen;
+                    }
+                }
+
+                return maxValueSeen;
             }
-        }*/]
+        }]
     };
 }(window.aoc = window.aoc || {days:{}}));
