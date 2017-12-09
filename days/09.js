@@ -20,8 +20,8 @@
 					.replace(/<[^>]*>/g, "")
 					.replace(/[^{}]/g, "");
 				
-				var depth = 1;
-				var result = 0;
+				let depth = 1;
+				let result = 0;
 				
 				for (let i = 1; i < cleanData.length; i++) {
 					if (cleanData[i] === "{") {
@@ -37,18 +37,35 @@
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 7982,
             testSets: [
-                { expectedAnswer: null, data: [] },
+				{ expectedAnswer: 0, data: "<>" },
+				{ expectedAnswer: 17, data: "<random characters>" },
+				{ expectedAnswer: 3, data: "<<<<>" },
+				{ expectedAnswer: 2, data: "<{!>}>" },
+				{ expectedAnswer: 0, data: "<!!>" },
+				{ expectedAnswer: 0, data: "<!!!>>" },
+				{ expectedAnswer: 10, data: "<{o\"i!a,<{i<a>" },
             ],
             getSolution: data => {
-                var result = 0;
+				let cleanData = data
+					.replace(/!!/g, "")
+					.replace(/!./g, "");
+				
+				let result = 0;
+				let regex = /<([^>]*)>/g;
+				let match = regex.exec(cleanData);
+				
+				while (!!match) {
+					result += match[1].length;
+					match = regex.exec(cleanData);
+				}
 
                 return result;
             }
-        }*/]
+        }]
     };
 
 }(window.aoc = window.aoc || {days:{}}));
