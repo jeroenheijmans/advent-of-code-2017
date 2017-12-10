@@ -47,12 +47,8 @@
                     result[at] = reversedSection[x];
                 }
 
-                currentPosition += currentLoopLength + skipSize;
+                currentPosition = (currentPosition + currentLoopLength + skipSize) % result.length;
                 skipSize++;
-
-                while (currentPosition >= result.length) {
-                    currentPosition -= result.length;
-                }
             }
         }
 
