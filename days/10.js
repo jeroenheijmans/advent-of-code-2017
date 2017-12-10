@@ -28,22 +28,12 @@
                 let reversedSection = [];
 
                 for (let at = currentPosition, x = 0; x < currentLoopLength; x++) {
-                    at = currentPosition + x;
-
-                    if (at >= result.length) {
-                        at -= result.length;
-                    }
-
+                    at = (currentPosition + x) % result.length;                   
                     reversedSection.unshift(result[at]);
                 }
 
                 for (let at = currentPosition, x = 0; x < currentLoopLength; x++) {
-                    at = currentPosition + x;
-
-                    if (at >= result.length) {
-                        at -= result.length;
-                    }
-
+                    at = (currentPosition + x) % result.length;
                     result[at] = reversedSection[x];
                 }
 
