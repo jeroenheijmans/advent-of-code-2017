@@ -22,6 +22,10 @@
                     assert.strictEqual(puzzle.getSolution(dumbClone), puzzle.expectedAnswer);
                 });
             }
+
+            for (let bonus of day.bonusTests || []) {
+                QUnit.test(`Bonus test: ${bonus.title}`, bonus.test);
+            }
         }
     }
 }(window.aoc = window.aoc || {days:{}}));
