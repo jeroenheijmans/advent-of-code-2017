@@ -1,50 +1,50 @@
 (function(aoc) {
-    function getPresentableData(list, currentPosition, length, skipSize) {
-        let rightBoundary = currentPosition + length - 1;
+    function getPresentableData(list, position, length, skip) {
+        let rightBoundary = position + length - 1;
 
         if (rightBoundary >= list.length) {
             rightBoundary -= list.length;
         }
 
         return list.map((item, idx) =>
-                idx === currentPosition && idx === rightBoundary ? `([${item}])`
-                : idx === currentPosition ? `([${item}]`
+                idx === position && idx === rightBoundary ? `([${item}])`
+                : idx === position ? `([${item}]`
                 : idx === rightBoundary ? `${item})`
                 : `${item}`
-            ).join(" ") + `  --  currentPosisition = ${currentPosition}  --  length = ${length}  --  skip = ${skipSize}`;
+            ).join(" ") + `  --  currentPosisition = ${position}  --  length = ${length}  --  skip = ${skip}`;
     }
 
-    function tieKnot(inputList, inputLengths, rounds = 1) {
-        let result = inputList.slice();
-        let currentPosition = 0;
-        let skipSize = 0;
+    function tieKnot(input, lengths, rounds = 1) {
+        let result = input.slice();
+        let position = 0;
+        let skip = 0;
 
         for (let round = 0; round < rounds; round++) {
-            // For debug cases in test sets from puzzle 1:
-            // console.log(getPresentableData(result, currentPosition, currentLoopLength, skipSize));
+            for (let i = 0; i < lengths.length; i++) {
+                // For debug cases in test sets from puzzle 1:
+                // console.log(getPresentableData(result, position, loopLength, skip));
 
-            for (let i = 0; i < inputLengths.length; i++) {
-                let currentLoopLength = inputLengths[i];
+                let loopLength = lengths[i];
                 let reversedSection = [];
 
-                for (let at = currentPosition, x = 0; x < currentLoopLength; x++) {
-                    at = (currentPosition + x) % result.length;                   
+                for (let at = position, x = 0; x < loopLength; x++) {
+                    at = (position + x) % result.length;
                     reversedSection.unshift(result[at]);
                 }
 
-                for (let at = currentPosition, x = 0; x < currentLoopLength; x++) {
-                    at = (currentPosition + x) % result.length;
+                for (let at = position, x = 0; x < loopLength; x++) {
+                    at = (position + x) % result.length;
                     result[at] = reversedSection[x];
                 }
 
-                currentPosition = (currentPosition + currentLoopLength + skipSize) % result.length;
-                skipSize++;
+                position = (position + loopLength + skip) % result.length;
+                skip++;
             }
         }
 
         return result;
     }
-    
+
     function getDenseHash(sparseHash) {
         let result = [];
 
@@ -55,12 +55,11 @@
 
         return result;
     }
-    
+
     function getHexForArray(denseHash) {
-        return denseHash.map(digit => {
-            let result = digit.toString(16);
-            return result.length === 1 ? `0${result}` : result;
-        }).join("");
+        return denseHash
+            .map(digit => ("0" + digit.toString(16)).substr(-2))
+            .join("");
     }
 
     aoc.days["10"] = {
@@ -73,8 +72,8 @@
                 { expectedAnswer: 12, data: { list: _.range(0,5), lengths: "3,4,1,5" } },
             ],
             getSolution: data => {
-                let inputLengths = data.lengths.split(",").map(c => parseInt(c, 10));
-                let knot = tieKnot(data.list, inputLengths);
+                let lengths = data.lengths.split(",").map(c => parseInt(c, 10));
+                let knot = tieKnot(data.list, lengths);
 
                 return knot[0] * knot[1];
             }
@@ -90,12 +89,12 @@
                 { expectedAnswer: "63960835bcdc130f0b66d7ff4f6a5a8e", data: { lengths: "1,2,4" } },
             ],
             getSolution: data => {
-                let currentPosition = 0;
-                let skipSize = 0;
-                let inputList = data.list || _.range(0,256);
-                let inputLengths = data.lengths.split("").map(c => c.charCodeAt(0)).concat([17, 31, 73, 47, 23]);
+                let position = 0;
+                let skip = 0;
+                let input = data.list || _.range(0,256);
+                let lengths = data.lengths.split("").map(c => c.charCodeAt(0)).concat([17, 31, 73, 47, 23]);
 
-                let knot = tieKnot(inputList, inputLengths, 64);
+                let knot = tieKnot(input, lengths, 64);
 
                 return getHexForArray(getDenseHash(knot));
             }
