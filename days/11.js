@@ -71,18 +71,74 @@
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 1447,
             testSets: [
-                { expectedAnswer: null, data: [] },
             ],
             getSolution: data => {
-                var result = 0;
-
-                return result;
+				let steps = data.split(",");
+				
+                let effectivePosition = {
+					"n": 0,
+					"ne": 0,
+					"se": 0,
+					"s": 0,
+					"sw": 0,
+					"nw": 0,
+				};
+				
+				const opposites = {
+					"n": "s",
+					"ne": "sw",
+					"se": "nw",
+					"s": "n",
+					"sw": "ne",
+					"nw": "se",
+				};
+				
+				let farthest = 0;
+				
+				const clock = ["n", "ne", "se", "s", "sw", "nw"];
+				
+				for (let step of steps) {
+					//debugger;
+					if (effectivePosition[opposites[step]] > 0) {
+						effectivePosition[opposites[step]]--;
+					} 
+					else {
+						let leftIdx = (clock.indexOf(step) - 2 + clock.length) % clock.length;
+						let rightIdx = (clock.indexOf(step) + 2) % clock.length;
+						
+						if (effectivePosition[clock[leftIdx]] > 0) {
+							// e.g. "n" + step "se" => "ne"
+							effectivePosition[clock[leftIdx]]--;
+							effectivePosition[clock[(leftIdx + 1) % clock.length]]++;
+						}
+						else if (effectivePosition[clock[rightIdx]] > 0) {
+							// e.g. step "n" + "se" => "ne"
+							effectivePosition[clock[rightIdx]]--;
+							effectivePosition[clock[(rightIdx - 1 + clock.length) % clock.length]]++;
+						} else {
+							effectivePosition[step]++;
+						}
+					}
+					
+					farthest = Math.max(farthest, Math.abs(
+						+ effectivePosition["n"]
+						+ effectivePosition["ne"]
+						+ effectivePosition["se"]
+						+ effectivePosition["s"]
+						+ effectivePosition["sw"]
+						+ effectivePosition["nw"]
+					));
+				}
+				
+				console.log(effectivePosition);
+				
+                return farthest;
             }
-        }*/]
+        }]
 
         /*,bonusTests: [{
             title: "placeholder",
