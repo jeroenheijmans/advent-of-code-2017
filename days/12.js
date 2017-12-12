@@ -2005,7 +2005,7 @@
 
         puzzles:[{
             title: "Puzzle 1",
-            expectedAnswer: null,
+            expectedAnswer: 306,
             testSets: [
                 { expectedAnswer: 6, data: `
                     0 <-> 2
@@ -2054,18 +2054,65 @@
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 200,
             testSets: [
-                { expectedAnswer: null, data: [] },
+                { expectedAnswer: 2, data: `
+                    0 <-> 2
+                    1 <-> 1
+                    2 <-> 0, 3, 4
+                    3 <-> 2, 4
+                    4 <-> 2, 3, 6
+                    5 <-> 6
+                    6 <-> 4, 5
+                ` },
             ],
             getSolution: data => {
-                var result = 0;
+                let basePipes = data
+                    .split(/\r?\n/)
+                    .map(p => p.trimLeft().trimRight())
+                    .map(p => p.replace(/ /g, ""))
+                    .filter(p => !!p)
+                    .map(p => {
+                        let parts = p.split("<->");
+                        return {
+                            pipe: parts[0],
+                            links: parts[1].split(",")
+                        }
+                    });
 
-                return result;
+                let maxrecur = 0;
+
+                function getConnectedPipes(pipe, currentSet) {
+                    for (let link of pipe.links) {
+                        if (!currentSet.has(link)) {
+                            currentSet.add(link);
+
+                            let linkedPipe = basePipes.find(p => p.pipe === link);
+                            if (!linkedPipe) { throw "YIKES!"; }
+
+                            getConnectedPipes(linkedPipe, currentSet);
+                        }
+                    }
+                    
+                    return currentSet;
+                }
+
+                let groups = [];
+
+                basePipes.forEach(p => {
+                    groups.push(getConnectedPipes(p, new Set([p.pipe])));
+                });
+                
+                let x = groups
+                    .map(g => Array.from(g))
+                    .map(g => g.sort((a,b) => a.localeCompare(b)))
+                    .map(g => JSON.stringify(g));
+                
+                return (new Set(x)).size;
             }
-        }*/]
+        }]
 
         /*,bonusTests: [{
             title: "placeholder",
