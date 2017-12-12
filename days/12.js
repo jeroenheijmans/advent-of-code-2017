@@ -1,4 +1,25 @@
 (function(aoc) {
+    function getCleanInput(data) {
+        return data
+            .split(/\r?\n/)
+            .map(p => p.trimLeft().trimRight())
+            .map(p => p.replace(/ /g, ""))
+            .filter(p => !!p)
+            .reduce((map, p) => {
+                let parts = p.split("<->");
+                map[parts[0]] = parts[1].split(",");
+                return map;
+            }, {});
+    }
+
+    function getConnectedPipes(pipes, pipe, currentSet = new Set()) {
+        currentSet.add(pipe);
+        for (let p of pipes[pipe].filter(p => !currentSet.has(p))) {
+            getConnectedPipes(pipes, p, currentSet);
+        }
+        return currentSet;
+    }
+        
     aoc.days["12"] = {
         actualInput: `
             0 <-> 950, 1039
@@ -2018,38 +2039,8 @@
                 ` },
             ],
             getSolution: data => {
-                let basePipes = data
-                    .split(/\r?\n/)
-                    .map(p => p.trimLeft().trimRight())
-                    .map(p => p.replace(/ /g, ""))
-                    .filter(p => !!p)
-                    .map(p => {
-                        let parts = p.split("<->");
-                        return {
-                            pipe: parts[0],
-                            links: parts[1].split(",")
-                        }
-                    });
-
-                let maxrecur = 0;
-
-                function getConnectedPipes(pipe, currentSet) {
-                    for (let link of pipe.links) {
-                        if (!currentSet.has(link)) {
-                            currentSet.add(link);
-
-                            let linkedPipe = basePipes.find(p => p.pipe === link);
-                            if (!linkedPipe) { throw "YIKES!"; }
-
-                            getConnectedPipes(linkedPipe, currentSet);
-                        }
-                    }
-                    
-                    return currentSet;
-                }
-
-                let connectedPipes = getConnectedPipes(basePipes[0], new Set([basePipes[0].pipe]));
-
+                let pipes = getCleanInput(data);
+                let connectedPipes = getConnectedPipes(pipes, "0");
                 return connectedPipes.size;
             }
         },
@@ -2069,57 +2060,17 @@
                 ` },
             ],
             getSolution: data => {
-                let basePipes = data
-                    .split(/\r?\n/)
-                    .map(p => p.trimLeft().trimRight())
-                    .map(p => p.replace(/ /g, ""))
-                    .filter(p => !!p)
-                    .map(p => {
-                        let parts = p.split("<->");
-                        return {
-                            pipe: parts[0],
-                            links: parts[1].split(",")
-                        }
-                    });
+                let pipes = getCleanInput(data);
+                let sets = Object.keys(pipes).map(p => getConnectedPipes(pipes, p));
 
-                let maxrecur = 0;
-
-                function getConnectedPipes(pipe, currentSet) {
-                    for (let link of pipe.links) {
-                        if (!currentSet.has(link)) {
-                            currentSet.add(link);
-
-                            let linkedPipe = basePipes.find(p => p.pipe === link);
-                            if (!linkedPipe) { throw "YIKES!"; }
-
-                            getConnectedPipes(linkedPipe, currentSet);
-                        }
-                    }
-                    
-                    return currentSet;
-                }
-
-                let groups = [];
-
-                basePipes.forEach(p => {
-                    groups.push(getConnectedPipes(p, new Set([p.pipe])));
-                });
-                
-                let x = groups
+                // Whelp, I dislike this ugly and slow solution, have turned to Stack Overflow
+                // for some help: https://stackoverflow.com/q/47766399/419956
+                return new Set(sets
                     .map(g => Array.from(g))
                     .map(g => g.sort((a,b) => a.localeCompare(b)))
-                    .map(g => JSON.stringify(g));
-                
-                return (new Set(x)).size;
+                    .map(g => JSON.stringify(g))
+                ).size;
             }
         }]
-
-        /*,bonusTests: [{
-            title: "placeholder",
-            test: assert => {
-                let result = "SOMETHING";
-                assert.strictEqual(result, "SOMETHING");
-            }
-        }]*/
     };
 }(window.aoc = window.aoc || {days:{}}));
