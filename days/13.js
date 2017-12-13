@@ -71,7 +71,7 @@
                     [1, 2],
                     [4, 4],
                     [6, 4],
-             ] },
+                ] },
             ],
             getSolution: data => {
                 let firewall = getFirewall(data);
@@ -92,25 +92,40 @@
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
             expectedAnswer: null,
             testSets: [
-                { expectedAnswer: null, data: [] },
+                { expectedAnswer: 10, data: [
+                    [0, 3],
+                    [1, 2],
+                    [4, 4],
+                    [6, 4],
+                ] },
             ],
             getSolution: data => {
-                let input = data;
+                let firewall = getFirewall(data);
 
-                return "NOT FOUND";
-            }
-        }*/]
+                let severity = 0;
+                let maxDepth = Math.max.apply(Math, data.map(d => d[0]));
+                let scannerKeys = Object.keys(firewall);
+                
+                function getsCaught(delay) {
+                    for (let position = -delay; position <= maxDepth; position++) {
+                        if (position >= 0 && firewall.hasOwnProperty(position)) {
+                            if (((position + delay) % firewall[position].mod) === 0) {
+                                return true;
+                            }
+                        }
+                    }
+                }
 
-        /*,bonusTests: [{
-            title: "placeholder",
-            test: assert => {
-                let result = "SOMETHING";
-                assert.strictEqual(result, "SOMETHING");
+                for (let i = 0; i < 100000; i++) {
+                    if (!getsCaught(i)) { return i; }
+                }
+
+                return "ANSWER NOT FOUND";
             }
-        }]*/
+        }]
     };
 }(window.aoc = window.aoc || {days:{}}));
