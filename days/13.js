@@ -49,7 +49,7 @@
 
         puzzles:[{
             title: "Puzzle 1",
-            expectedAnswer: null,
+            expectedAnswer: 2508,
             testSets: [
                 { expectedAnswer: 24, data: [
                     [0, 3],
