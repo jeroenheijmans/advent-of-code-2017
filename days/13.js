@@ -81,20 +81,11 @@
                 let scannerKeys = Object.keys(firewall);
                 
                 for (let position = 0; position <= maxDepth; position++) {
-                    if (firewall.hasOwnProperty(position) && firewall[position].at === 0) {
-                        // Collision!
-                        severity += firewall[position].depth * firewall[position].range;
+                    if (firewall.hasOwnProperty(position)) {
+                        if ((position % firewall[position].mod) === 0) {
+                            severity += firewall[position].depth * firewall[position].range;
+                        }
                     }
-
-                    for (let k of scannerKeys) {
-                        if (firewall[k].at === firewall[k].range - 1) {
-                            firewall[k].dir = -1;
-                        } else if (firewall[k].at === 0) {
-                            firewall[k].dir = +1;
-                        } 
-
-                        firewall[k].at += firewall[k].dir;
-                    };
                 }
 
                 return severity;
