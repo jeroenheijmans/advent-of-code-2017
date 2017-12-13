@@ -1,19 +1,5 @@
 (function(aoc) {
 
-    function getFirewall(input) {
-        return input.reduce((map, entry) => {
-            map[entry[0]] = {
-                depth: entry[0],
-                range: entry[1],
-                mod: (entry[1] - 1) * 2,
-                at: 0,
-                dir: 1,
-            };
-
-            return map;
-        }, {});
-    }
-    
     aoc.days["13"] = {
         actualInput: [
             [0, 3],
@@ -74,16 +60,21 @@
                 ] },
             ],
             getSolution: data => {
-                let firewall = getFirewall(data);
+                let firewall = data.reduce((map, entry) => {
+                    map[entry[0]] = {
+                        range: entry[1],
+                        mod: (entry[1] - 1) * 2,
+                    };
+                    return map;
+                }, {});
 
                 let severity = 0;
                 let maxDepth = Math.max.apply(Math, data.map(d => d[0]));
-                let scannerKeys = Object.keys(firewall);
-                
+
                 for (let position = 0; position <= maxDepth; position++) {
                     if (firewall.hasOwnProperty(position)) {
                         if ((position % firewall[position].mod) === 0) {
-                            severity += firewall[position].depth * firewall[position].range;
+                            severity += position * firewall[position].range;
                         }
                     }
                 }
@@ -94,7 +85,7 @@
 
         {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 3913186,
             testSets: [
                 { expectedAnswer: 10, data: [
                     [0, 3],
@@ -104,25 +95,28 @@
                 ] },
             ],
             getSolution: data => {
-                let firewall = getFirewall(data);
+                // Only save the modulo value for each scanner to improve performance...
+                let firewall = data.reduce((map, entry) => {
+                    map[entry[0]] = (entry[1] - 1) * 2;
+                    return map;
+                }, {});
 
-                let severity = 0;
                 let maxDepth = Math.max.apply(Math, data.map(d => d[0]));
-                let scannerKeys = Object.keys(firewall);
-                
+
                 function getsCaught(delay) {
-                    for (let position = -delay; position <= maxDepth; position++) {
-                        if (position >= 0 && firewall.hasOwnProperty(position)) {
-                            if (((position + delay) % firewall[position].mod) === 0) {
-                                return true;
-                            }
+                    for (let position = 0; position <= maxDepth; position++) {
+                        if (firewall.hasOwnProperty(position)
+                            && ((position + delay) % firewall[position]) === 0) {
+                            return true;
                         }
                     }
                 }
 
-                for (let i = 0; i < 100000; i++) {
+                let i = 0;
+
+                do {
                     if (!getsCaught(i)) { return i; }
-                }
+                } while (++i);
 
                 return "ANSWER NOT FOUND";
             }
