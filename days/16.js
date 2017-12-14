@@ -1,12 +1,12 @@
 (function(aoc) {
-    aoc.days["15"] = {
-        actualInput: ``,
+    aoc.days["16"] = {
+        actualInput: [],
 
         puzzles:[{
             title: "Puzzle 1",
             expectedAnswer: null,
             testSets: [
-                { expectedAnswer: null, data: `` },
+                { expectedAnswer: null, data: [] },
             ],
             getSolution: data => {
                 let input = data;
