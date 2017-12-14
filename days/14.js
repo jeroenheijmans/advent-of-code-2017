@@ -39,52 +39,29 @@
                     grid.push(row);
                 }
 
-                let groups = [];
-                
-                function touches(x, y, group) {
-                    return group.some(point => 
-                        (point.x === x && Math.abs(point.y - y) === 1)
-                        || (point.y === y && Math.abs(point.x - x) === 1)
-                    );
-                }
+                let result = 0;
 
-                for (let y = 0; y < grid[0].length; y++) {
-                    for (let x = 0; x < grid[0].length; x++) {
-
-                        if (grid[y][x] === 1) {
-                            let group = groups.find(g => touches(x, y, g));
-
-                            if (!!group) {
-                                group.push({x:x,y:y});
-                            } else {
-                                groups.push([{x:x,y:y}]);
-                            }
-                        }                        
+                function recursiveEliminateFrom(x,y) {
+                    if (grid[x][y] === 1) {
+                        grid[x][y] = 0;
+                     
+                        if (x > 0) { recursiveEliminateFrom(x-1, y); }
+                        if (y > 0) { recursiveEliminateFrom(x, y-1); }
+                        if (x < 127) { recursiveEliminateFrom(x+1, y); }
+                        if (y < 127) { recursiveEliminateFrom(x, y+1); }                        
                     }
                 }
 
-                // Whelp, just looping until something happens?!
-                // AARRGGGHHH I SHOULD RETHINK MY APPROACH AND START OVER!!!
-                for (let z=0; z<1000; z++) {
-                    let oldLength = groups.length;
-                    groups = groups.reduce((result, grp) => {
-                        let wasAppended = false;
-                        for (let i = 0; i < result.length; i++) {
-                            if (result[i].some(p => touches(p.x, p.y, grp))) {
-                                result[i] = result[i].concat(grp);
-                                wasAppended = true;
-                                break;
-                            }
+                for (let y = 0; y < 128; y++) {
+                    for (let x = 0; x < 128; x++) {
+                        if (grid[x][y] === 1) {
+                            result++;
+                            recursiveEliminateFrom(x,y);
                         }
-                        if (!wasAppended) {
-                            result.push(grp);
-                        }                
-                        return result;
-                    }, []);
-                    if (groups.length === oldLength) break;
+                    }
                 }
 
-                return groups.length;
+                return result;
             }
         }]
 
