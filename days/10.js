@@ -15,26 +15,25 @@
     };
 
     function tieKnot(inputText, rounds = 1, range = 256) {
-        let result = _.range(0, range);
+        let result = [...Array(range).keys()];
         let position = 0;
         let skip = 0;
 
         for (let round = 0; round < rounds; round++) {
-            for (let i = 0; i < inputText.length; i++) {
-                let loopLength = inputText[i];
-                let reversedSection = [];
+            for (const loopLength of inputText) {
+                let reversedSection = Array(loopLength);
 
                 for (let at = position, x = 0; x < loopLength; x++) {
                     at = (position + x) % result.length;
-                    reversedSection.unshift(result[at]);
+                    reversedSection[loopLength - x - 1] = result[at];
                 }
 
                 for (let at = position, x = 0; x < loopLength; x++) {
                     at = (position + x) % result.length;
                     result[at] = reversedSection[x];
                 }
-
-                position = (position + loopLength + skip) % result.length;
+       
+                position = (position + loopLength + skip) % range;
                 skip++;
             }
         }
