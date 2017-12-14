@@ -80,7 +80,7 @@
 
         {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 1093,
             testSets: [
             ],
             getSolution: data => {
@@ -94,15 +94,6 @@
                     let row = bin.split("").map(c => parseInt(c, 10));
                     grid.push(row);
                 }
-
-                //grid[0] = grid[0].map(cell => cell === 1 ? 2 : cell);
-                //grid = [[1,0,1,1],[1,0,1,0],[0,0,0,0],[1,0,1,1]];
-                //grid = [[1,0,1,1],[1,1,0,0],[1,0,1,0],[0,1,0,1]];
-                //grid = [[1,1,1,1],[1,1,1,1],[1,0,0,0],[0,1,1,1]];
-                //grid = [[1,0,0,1],[0,0,0,1],[1,0,0,1],[1,1,0,1]];
-
-                // for (let i=0; i<4; i++) { console.log(`${i}  =>  ${JSON.stringify(grid[i])}`); }
-                // console.log("");
 
                 let groups = [];
                 
@@ -127,8 +118,11 @@
                         }                        
                     }
                 }
-//1093?
-                for (let z=0; z<100; z++) {
+
+                // Whelp, just looping until something happens?!
+                // AARRGGGHHH I SHOULD RETHINK MY APPROACH AND START OVER!!!
+                for (let z=0; z<1000; z++) {
+                    let oldLength = groups.length;
                     groups = groups.reduce((result, grp) => {
                         let wasAppended = false;
                         for (let i = 0; i < result.length; i++) {
@@ -143,14 +137,9 @@
                         }                
                         return result;
                     }, []);
+                    if (groups.length === oldLength) break;
                 }
 
-                console.log(groups);
-            
-                // NOT 2063
-                // NOT 1141 (curiously unlucky guess)
-                // NOT 1138 (after switching x and y)
-                // AARRGGGHHH I SHOULD RETHINK MY APPROACH AND START OVER!!!
                 return groups.length;
             }
         }]
