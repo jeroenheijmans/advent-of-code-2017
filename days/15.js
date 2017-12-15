@@ -1,6 +1,6 @@
 (function(aoc) {
     aoc.days["15"] = {
-        actualInput: { a: 277, b: 349, fa: 16807, fb: 48271, reps: 40 * 1000 * 1000  },
+        actualInput: { a: 277, b: 349, fa: 16807, fb: 48271 },
 
         puzzles:[{
             title: "Puzzle 1",
@@ -11,9 +11,10 @@
             getSolution: data => {
                 let input = data;
                 const divisor = 2147483647;
+                const reps = data.reps || 40;//sloowww... * 1000 * 1000;
                 let result = 0;
 
-                for (let i=0; i<data.reps; i++) {
+                for (let i=0; i<reps; i++) {
                     input.a = (input.a * input.fa) % divisor;
                     input.b = (input.b * input.fb) % divisor;
 
@@ -27,18 +28,34 @@
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 320,
             testSets: [
-                { expectedAnswer: null, data: [] },
+                { expectedAnswer: 309, data: { a: 65, b: 8921, fa: 16807, fb: 48271 } },
             ],
             getSolution: data => {
                 let input = data;
+                const divisor = 2147483647;
+                let result = 0;
+                const reps = data.reps || 5 * 1000 * 1000;//sloowww... * 1000 * 1000;
 
-                return "NOT FOUND";
+                for (let i=0; i<reps; i++) {
+                    do { input.a = (input.a * input.fa) % divisor; } while (input.a % 4 !== 0);
+                    do { input.b = (input.b * input.fb) % divisor; } while (input.b % 8 !== 0);
+
+                    let bina = bin(input.a);
+                    let binb = bin(input.b);                  
+
+                    if (bina === binb) {
+                        result++;
+                    }
+                }
+
+                // Not 2482, you've made a mistake!
+                return result;
             }
-        }*/]
+        }]
 
         ,bonusTests: [{
             title: "Bin represtation 1",
