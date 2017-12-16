@@ -77,29 +77,12 @@
                 let dancers = data.dancers.split("");
                 let moves = data.moves.split(",");
 
-                let ps = new Set();
-
-                for (let i=0; i < 1 * 34; i++) {
-                    let pos = dancers.join("");
-                    if (ps.has(pos)) { 
-                        // console.log(i);
-                        ps = new Set();
-                    }
-                    ps.add(pos);
-                    
+                for (let i=0; i < (1000000000 % 42); i++) {                   
                     dancers = dance(dancers, moves);
                 }
                 
                 return dancers.join("");
             }
         }]
-
-        /*,bonusTests: [{
-            title: "placeholder",
-            test: assert => {
-                let result = "SOMETHING";
-                assert.strictEqual(result, "SOMETHING");
-            }
-        }]*/
     };
 }(window.aoc = window.aoc || {days:{}}));
