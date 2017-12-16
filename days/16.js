@@ -77,7 +77,15 @@
                 let dancers = data.dancers.split("");
                 let moves = data.moves.split(",");
 
-                for (let i=0; i < (1000000000 % 42); i++) {                   
+                let startingPositions = [];
+                const billion = 1000000000;
+
+                for (let i=0; i < billion; i++) {
+                    let position = dancers.join("");
+                    if (startingPositions.indexOf(position) >= 0) { 
+                        return startingPositions[billion % i];
+                    }
+                    startingPositions.push(position);                    
                     dancers = dance(dancers, moves);
                 }
                 
