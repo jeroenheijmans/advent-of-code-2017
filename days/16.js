@@ -1,43 +1,54 @@
 (function(aoc) {
     function dance(dancers, moves) {
         function spin(move) {
-            let x = parseInt(move.substr(1), 10);
-            dancers = dancers.slice(-x).concat(dancers.slice(0, dancers.length-x));
+            dancers = dancers.slice(-move.x).concat(dancers.slice(0, dancers.length - move.x));
         }
 
-        function positionSwap(move) {
-            let [pa, pb] = move.substr(1).split("/").map(p => parseInt(p, 10));
+        function exchange(move) {
+            let temp = dancers[move.pa];
+            dancers[move.pa] = dancers[move.pb];
+            dancers[move.pb] = temp;
+        }
+
+        function partner(move) {
+            let pa = dancers.indexOf(move.a);
+            let pb = dancers.indexOf(move.b);
             let temp = dancers[pa];
             dancers[pa] = dancers[pb];
             dancers[pb] = temp;
         }
 
-        function namedSwap(move) {
-            let [a,b] = move.substr(1).split("/");
-            let pa = dancers.indexOf(a);
-            let pb = dancers.indexOf(b);
-            let temp = dancers[pa];
-            dancers[pa] = dancers[pb];
-            dancers[pb] = temp;
-        }
+        let parsedMoves = [];
 
         for (let i=0; i<moves.length; i++) {
-            switch (moves[i][0]) {
+            if (moves[i][0] === "s") {
+                parsedMoves[i] = { type: "s", x: parseInt(moves[i].substr(1), 10) };
+            } else if (moves[i][0] === "x") {
+                let [pa, pb] = moves[i].substr(1).split("/").map(p => parseInt(p, 10));
+                parsedMoves[i] = { type: "x", pa: pa, pb: pb };
+            } else if (moves[i][0] === "p") {
+                let [a,b] = moves[i].substr(1).split("/");
+                parsedMoves[i] = { type: "p", a: a, b: b };
+            }
+        }
+
+        for (let i=0; i<parsedMoves.length; i++) {
+            switch (parsedMoves[i].type) {
                 case "s":
-                    spin(moves[i]);
+                    spin(parsedMoves[i]);
                     break;
                 case "x":
-                    positionSwap(moves[i]);
+                    exchange(parsedMoves[i]);
                     break;
                 case "p":
-                    namedSwap(moves[i]);
+                    partner(parsedMoves[i]);
                     break;
                 default:
                     throw "HUH!?";
             }
         }
 
-        return dancers.join("");
+        return dancers;
     }
 
     aoc.days["16"] = {
@@ -53,7 +64,7 @@
                 let dancers = data.dancers.split("");
                 let moves = data.moves.split(",");
 
-                return dance(dancers, moves);
+                return dance(dancers, moves).join("");
             }
         },
 
@@ -61,12 +72,30 @@
             title: "Puzzle 2",
             expectedAnswer: null,
             testSets: [
-                { expectedAnswer: "baedc", data: { dancers: "abcde", moves: "s1,x3/4,pe/b" } },
             ],
             getSolution: data => {
-                let input = data;
+                let dancers = data.dancers.split("");
+                let moves = data.moves.split(",");
 
-                return "NOT FOUND";
+                let ps = new Set();
+
+                for (let i=0; i < 1 * 34; i++) {
+                    let pos = dancers.join("");
+                    if (ps.has(pos)) { 
+                        // console.log(i);
+                        ps = new Set();
+                    }
+                    ps.add(pos);
+                    
+                    dancers = dance(dancers, moves);
+                }
+
+                // Seems to repeat every 42 cycles, so:
+                console.log((1000000000) % 42);
+
+                // WRONG GUESS: fipjbdhaeolgknmc (after 100)
+                // WRONG GUESS: gfmdpeanilcjkhob (after 34) WHY!?!?!?
+                return dance(dancers, moves).join("");
             }
         }]
 
