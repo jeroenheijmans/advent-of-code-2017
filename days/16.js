@@ -70,7 +70,7 @@
 
         {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: "hklecbpnjigoafmd",
             testSets: [
             ],
             getSolution: data => {
@@ -89,13 +89,8 @@
                     
                     dancers = dance(dancers, moves);
                 }
-
-                // Seems to repeat every 42 cycles, so:
-                console.log((1000000000) % 42);
-
-                // WRONG GUESS: fipjbdhaeolgknmc (after 100)
-                // WRONG GUESS: gfmdpeanilcjkhob (after 34) WHY!?!?!?
-                return dance(dancers, moves).join("");
+                
+                return dancers.join("");
             }
         }]
 
