@@ -23,19 +23,19 @@
                 }
 
                 for (let i = 1; i <= max; i++) {
-                    
+
                     currentPosition += steps;
                     currentPosition %= buffer.length;
 
                     if (currentPosition >= buffer.length - 1) {
-                        buffer.push(i); 
+                        buffer.push(i);
                     }
-                    else { 
-                        buffer.splice(currentPosition + 1, 0, i); 
+                    else {
+                        buffer.splice(currentPosition + 1, 0, i);
                     }
 
                     currentPosition++;
-                    currentPosition %= buffer.length;                    
+                    currentPosition %= buffer.length;
 
                     //print(i);
                 }
@@ -46,18 +46,39 @@
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
             expectedAnswer: null,
             testSets: [
-                { expectedAnswer: null, data: [] },
             ],
             getSolution: data => {
-                let input = data;
+                const max = 1e6;
+                let steps = data;
+                let bufferLength = 1;
+                let currentPosition = 0;
+                let result = -1;
 
-                return "NOT FOUND";
+                for (let i = 1; i <= max; i++) {
+
+                    currentPosition += steps;
+                    currentPosition %= bufferLength;
+
+                    if (currentPosition === 0) {
+                        result = i;
+                    }
+
+                    bufferLength++;
+
+                    currentPosition++;
+                    currentPosition %= bufferLength;
+
+                    if (i % 1e6 === 0) console.log(i);
+                }
+
+                // NOT 730797
+                return result;
             }
-        }*/]
+        }]
 
         /*,bonusTests: [{
             title: "placeholder",
