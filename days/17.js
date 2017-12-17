@@ -48,11 +48,11 @@
 
         {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 10150888,
             testSets: [
             ],
             getSolution: data => {
-                const max = 1e6;
+                const max = 50e6;
                 let steps = data;
                 let bufferLength = 1;
                 let currentPosition = 0;
@@ -71,21 +71,10 @@
 
                     currentPosition++;
                     currentPosition %= bufferLength;
-
-                    if (i % 1e6 === 0) console.log(i);
                 }
 
-                // NOT 730797
                 return result;
             }
         }]
-
-        /*,bonusTests: [{
-            title: "placeholder",
-            test: assert => {
-                let result = "SOMETHING";
-                assert.strictEqual(result, "SOMETHING");
-            }
-        }]*/
     };
 }(window.aoc = window.aoc || {days:{}}));
