@@ -1,17 +1,48 @@
 (function(aoc) {
     aoc.days["17"] = {
-        actualInput: [],
+        actualInput: 394,
 
         puzzles:[{
             title: "Puzzle 1",
-            expectedAnswer: null,
+            expectedAnswer: 926,
             testSets: [
-                { expectedAnswer: null, data: [] },
+                { expectedAnswer: 638, data: 3 },
             ],
             getSolution: data => {
-                let input = data;
+                const max = 2017;
+                let steps = data;
+                let buffer = [0];
+                let currentPosition = 0;
 
-                return "NOT FOUND";
+                const print = (x) => {
+                    let result = "";
+                    for (let i=0; i<buffer.length; i++) {
+                        result += i===currentPosition ? ` (${buffer[i]}) ` : `  ${buffer[i]}  `;
+                    }
+                    console.log(x + "  =>  " + result);
+                }
+
+                for (let i = 1; i <= max; i++) {
+                    
+                    currentPosition += steps;
+                    currentPosition %= buffer.length;
+
+                    if (currentPosition >= buffer.length - 1) {
+                        buffer.push(i); 
+                    }
+                    else { 
+                        buffer.splice(currentPosition + 1, 0, i); 
+                    }
+
+                    currentPosition++;
+                    currentPosition %= buffer.length;                    
+
+                    //print(i);
+                }
+
+                let answerPosition = (1 + currentPosition) % buffer.length;
+
+                return buffer[answerPosition];
             }
         },
 
