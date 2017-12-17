@@ -14,30 +14,10 @@
                 let buffer = [0];
                 let currentPosition = 0;
 
-                const print = (x) => {
-                    let result = "";
-                    for (let i=0; i<buffer.length; i++) {
-                        result += i===currentPosition ? ` (${buffer[i]}) ` : `  ${buffer[i]}  `;
-                    }
-                    console.log(x + "  =>  " + result);
-                }
-
                 for (let i = 1; i <= max; i++) {
-
-                    currentPosition += steps;
+                    currentPosition += 1 + steps;
                     currentPosition %= buffer.length;
-
-                    if (currentPosition >= buffer.length - 1) {
-                        buffer.push(i);
-                    }
-                    else {
-                        buffer.splice(currentPosition + 1, 0, i);
-                    }
-
-                    currentPosition++;
-                    currentPosition %= buffer.length;
-
-                    //print(i);
+                    buffer.splice(currentPosition, 0, i);
                 }
 
                 let answerPosition = (1 + currentPosition) % buffer.length;
@@ -59,18 +39,10 @@
                 let result = -1;
 
                 for (let i = 1; i <= max; i++) {
-
-                    currentPosition += steps;
+                    currentPosition += 1 + steps;
                     currentPosition %= bufferLength;
-
-                    if (currentPosition === 0) {
-                        result = i;
-                    }
-
+                    if (currentPosition === 0) { result = i; }
                     bufferLength++;
-
-                    currentPosition++;
-                    currentPosition %= bufferLength;
                 }
 
                 return result;
