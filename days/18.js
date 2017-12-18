@@ -281,7 +281,7 @@
 
                 // NOT 127 with "terminating"
                 // NOT 8128 with "deadlocked" after 79424 iterations - answer too high
-                return prog1.nrOfSends;
+                return prog2.nrOfSends;
             }
         }]
 
