@@ -1,63 +1,63 @@
 (function(aoc) {
     aoc.days["18"] = {
         actualInput: `
-        set i 31
-        set a 1
-        mul p 17
-        jgz p p
-        mul a 2
-        add i -1
-        jgz i -2
-        add a -1
-        set i 127
-        set p 826
-        mul p 8505
-        mod p a
-        mul p 129749
-        add p 12345
-        mod p a
-        set b p
-        mod b 10000
-        snd b
-        add i -1
-        jgz i -9
-        jgz a 3
-        rcv b
-        jgz b -1
-        set f 0
-        set i 126
-        rcv a
-        rcv b
-        set p a
-        mul p -1
-        add p b
-        jgz p 4
-        snd a
-        set a b
-        jgz 1 3
-        snd b
-        set f 1
-        add i -1
-        jgz i -11
-        snd a
-        jgz f -16
-        jgz a -19`,
+            set i 31
+            set a 1
+            mul p 17
+            jgz p p
+            mul a 2
+            add i -1
+            jgz i -2
+            add a -1
+            set i 127
+            set p 826
+            mul p 8505
+            mod p a
+            mul p 129749
+            add p 12345
+            mod p a
+            set b p
+            mod b 10000
+            snd b
+            add i -1
+            jgz i -9
+            jgz a 3
+            rcv b
+            jgz b -1
+            set f 0
+            set i 126
+            rcv a
+            rcv b
+            set p a
+            mul p -1
+            add p b
+            jgz p 4
+            snd a
+            set a b
+            jgz 1 3
+            snd b
+            set f 1
+            add i -1
+            jgz i -11
+            snd a
+            jgz f -16
+            jgz a -19`,
 
         puzzles:[{
             title: "Puzzle 1",
             expectedAnswer: 7071,
             testSets: [
                 { expectedAnswer: 4, data: `
-                set a 1
-                add a 2
-                mul a a
-                mod a 5
-                snd a
-                set a 0
-                rcv a
-                jgz a -1
-                set a 1
-                jgz a -2` },
+                    set a 1
+                    add a 2
+                    mul a a
+                    mod a 5
+                    snd a
+                    set a 0
+                    rcv a
+                    jgz a -1
+                    set a 1
+                    jgz a -2` },
             ],
             getSolution: data => {
                 let instructions = data
@@ -87,7 +87,7 @@
                 let i = 0;
                 let pos = 0;
 
-                const getreg = n => Number.isInteger(n) ? n : registers[n];
+                const getRegisterOrValue = n => Number.isInteger(n) ? n : registers[n];
 
                 while (i++ < 1e6) {
                     let {op, x, y} = instructions[pos];
@@ -95,36 +95,35 @@
 
                     switch (op) {
                         case "snd":
-                            snd = getreg(x);
+                            snd = getRegisterOrValue(x);
                             break;
 
                         case "set":
-                            registers[x] = getreg(y);
+                            registers[x] = getRegisterOrValue(y);
                             break;
 
                         case "add":
-                            registers[x] += getreg(y);
+                            registers[x] += getRegisterOrValue(y);
                             break;
 
                         case "mul":
-                            registers[x] *= getreg(y);
+                            registers[x] *= getRegisterOrValue(y);
                             break;
 
                         case "mod":
-                            registers[x] %= getreg(y);
+                            registers[x] %= getRegisterOrValue(y);
                             break;
 
                         case "rcv":
-                            if (getreg(x) !== 0) {
+                            if (getRegisterOrValue(x) !== 0) {
                                 rcv = snd;
-                                console.log(i);
                                 return rcv;
                             }
                             break;
 
                         case "jgz":
-                            if (getreg(x) > 0) {
-                                incr = getreg(y);
+                            if (getRegisterOrValue(x) > 0) {
+                                incr = getRegisterOrValue(y);
                             }
                             break;
 
@@ -145,16 +144,16 @@
 
         {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 8001,
             testSets: [
                 { expectedAnswer: 3, data: `
-                snd 1
-                snd 2
-                snd p
-                rcv a
-                rcv b
-                rcv c
-                rcv d` },
+                    snd 1
+                    snd 2
+                    snd p
+                    rcv a
+                    rcv b
+                    rcv c
+                    rcv d` },
             ],
             getSolution: data => {
                 function Program(data) {
@@ -172,7 +171,7 @@
                             };
                         });
 
-                    let registers = _.range(97,123)
+                    let registers = _.range(97,123) // [a-z]
                         .map(c => String.fromCharCode(c))
                         .reduce((r, c) => {
                             r[c] = 0;
@@ -184,25 +183,27 @@
                     let pos = 0;
 
                     this.nrOfSends = 0;
+                    this.isWaiting = false;
+                    this.isTerminated = false;
 
-                    const getreg = n => Number.isInteger(n) ? n : registers[n];
+                    const getRegisterOrValue = n => Number.isInteger(n) ? n : registers[n];
 
                     this.step = function() {
-                        let incr = this.act(instructions[pos]);
-                        pos += incr;
-                        if (pos < 0 || pos >= instructions.length) {
-                            return 1; // Terminated
-                        }
-                        return 0;
+                        if (!this.isTerminated) {                      
+                            pos += this.act(instructions[pos]);
+                            if (pos < 0 || pos >= instructions.length) {
+                                this.isTerminated = true;
+                            }
+                        }                    
                     }
 
-                    this.getOutbound = function() {
+                    this.clearSndBuffer = function() {
                         let result = snd.slice();
                         snd = [];
                         return result
                     }
 
-                    this.setInbound = function(messages) {
+                    this.pushToRcvBuffer = function(messages) {
                         rcv = rcv.concat(messages);
                     }
 
@@ -214,24 +215,24 @@
 
                         switch (op) {
                             case "snd":
-                                snd.push(getreg(x));
+                                snd.push(getRegisterOrValue(x));
                                 this.nrOfSends++;
                                 break;
 
                             case "set":
-                                registers[x] = getreg(y);
+                                registers[x] = getRegisterOrValue(y);
                                 break;
 
                             case "add":
-                                registers[x] += getreg(y);
+                                registers[x] += getRegisterOrValue(y);
                                 break;
 
                             case "mul":
-                                registers[x] *= getreg(y);
+                                registers[x] *= getRegisterOrValue(y);
                                 break;
 
                             case "mod":
-                                registers[x] %= getreg(y);
+                                registers[x] %= getRegisterOrValue(y);
                                 break;
 
                             case "rcv":
@@ -244,8 +245,8 @@
                                 break;
 
                             case "jgz":
-                                if (getreg(x) > 0) {
-                                    incr = getreg(y);
+                                if (getRegisterOrValue(x) > 0) {
+                                    incr = getRegisterOrValue(y);
                                 }
                                 break;
 
@@ -257,40 +258,26 @@
                     }
                 }
 
+                let prog0 = new Program(data);
                 let prog1 = new Program(data);
-                let prog2 = new Program(data);
 
-                prog2.act({ op: "set", x: "p", y: 1 });
+                prog1.act({ op: "set", x: "p", y: 1 });
 
                 let i = 0;
-
                 while (i++ < 1e6) {
-                    prog2.setInbound(prog1.getOutbound());
-                    prog1.setInbound(prog2.getOutbound());
+                    prog1.pushToRcvBuffer(prog0.clearSndBuffer());
+                    prog0.pushToRcvBuffer(prog1.clearSndBuffer());
 
-                    if (prog1.step()) { console.log("Prog1 terminated"); break; }
-                    if (prog2.step()) { console.log("Prog2 terminated"); break; }
+                    prog0.step();
+                    prog1.step();
 
-                    if (prog1.isWaiting && prog2.isWaiting) {
-                        console.log("Deadlocked");
-                        break;
-                    }
+                    if (prog0.isWaiting && prog1.isWaiting) { break; }
+                    if (prog0.isTerminated || prog1.isTerminated) { break; }
                 }
-                
-                console.log(`Exiting after ${i} iterations`);
 
-                // NOT 127 with "terminating"
-                // NOT 8128 with "deadlocked" after 79424 iterations - answer too high
-                return prog2.nrOfSends;
+                return prog1.nrOfSends;
             }
         }]
 
-        /*,bonusTests: [{
-            title: "placeholder",
-            test: assert => {
-                let result = "SOMETHING";
-                assert.strictEqual(result, "SOMETHING");
-            }
-        }]*/
     };
 }(window.aoc = window.aoc || {days:{}}));
