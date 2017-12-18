@@ -66,22 +66,22 @@
                     .filter(i => !!i)
                     .map(i => i.trim())
                     .map(i => {
-                        let parts = i.split(" ");                        
-                        
+                        let parts = i.split(" ");
+
                         return {
                             op: parts[0],
                             x: parseInt(parts[1], 10) || parts[1],
                             y: parts.length < 2 ? null : (parseInt(parts[2], 10) || parts[2])
                         };
                     });
-                
+
                 let registers = _.range(97,123)
                     .map(c => String.fromCharCode(c))
                     .reduce((r, c) => {
                         r[c] = 0;
                         return r;
                     }, {});
-                    
+
                 let snd = 0;
                 let rcv = 0;
                 let i = 0;
@@ -92,7 +92,7 @@
                 while (i++ < 1e6) {
                     let {op, x, y} = instructions[pos];
                     let incr = 0;
-                    
+
                     switch (op) {
                         case "snd":
                             snd = getreg(x);
@@ -143,18 +143,148 @@
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
             expectedAnswer: null,
             testSets: [
-                { expectedAnswer: null, data: [] },
+                { expectedAnswer: null, data: `
+                snd 1
+                snd 2
+                snd p
+                rcv a
+                rcv b
+                rcv c
+                rcv d` },
             ],
             getSolution: data => {
-                let input = data;
+                function Program(data) {
+                    let instructions = data
+                        .trim()
+                        .split(/\r?\n/g)
+                        .filter(i => !!i)
+                        .map(i => i.trim())
+                        .map(i => {
+                            let parts = i.split(" ");
+                            return {
+                                op: parts[0],
+                                x: parseInt(parts[1], 10) || parts[1],
+                                y: parts.length < 2 ? null : (parseInt(parts[2], 10) || parts[2])
+                            };
+                        });
 
-                return "NOT FOUND";
+                    let registers = _.range(97,123)
+                        .map(c => String.fromCharCode(c))
+                        .reduce((r, c) => {
+                            r[c] = 0;
+                            return r;
+                        }, {});
+
+                    let snd = [];
+                    let rcv = [];
+                    let pos = 0;
+
+                    this.nrOfSends = 0;
+
+                    const getreg = n => Number.isInteger(n) ? n : registers[n];
+
+                    this.step = function() {
+                        let incr = this.act(instructions[pos]);
+                        pos += incr;
+                        if (pos < 0 || pos >= instructions.length) {
+                            throw "Terminated";
+                        }
+                    }
+
+                    this.getOutbound = function() {
+                        let result = snd.slice();
+                        snd = [];
+                        return result
+                    }
+
+                    this.setInbound = function(messages) {
+                        rcv = rcv.concat(messages);
+                    }
+
+                    this.act = function(instruction) {
+                        let {op, x, y} = instruction;
+                        let incr = 0;
+
+                        this.isWaiting = false;
+
+                        switch (op) {
+                            case "snd":
+                                snd.push(getreg(x));
+                                this.nrOfSends++;
+                                break;
+
+                            case "set":
+                                registers[x] = getreg(y);
+                                break;
+
+                            case "add":
+                                registers[x] += getreg(y);
+                                break;
+
+                            case "mul":
+                                registers[x] *= getreg(y);
+                                break;
+
+                            case "mod":
+                                registers[x] %= getreg(y);
+                                break;
+
+                            case "rcv":
+                                if (getreg(x) !== 0) {
+                                    if (rcv.length > 0) {
+                                        registers[x] = rcv.shift();
+                                    } else {
+                                        this.isWaiting = true;
+                                        return 0; // Wait until rcv has something
+                                    }
+                                }
+                                break;
+
+                            case "jgz":
+                                if (getreg(x) > 0) {
+                                    incr = getreg(y);
+                                }
+                                break;
+
+                            default:
+                                throw "UH OH";
+                        }
+
+                        return incr || 1;
+                    }
+                }
+
+                let prog1 = new Program(data);
+                let prog2 = new Program(data);
+
+                prog2.act({ op: "set", x: "p", y: 1 });
+
+                try {
+                    let i = 0;
+                    while (i++ < 1e6) {
+                        prog2.setInbound(prog1.getOutbound());
+                        prog1.setInbound(prog2.getOutbound());
+
+                        prog1.step();
+                        prog2.step();
+
+                        if (prog1.isWaiting && prog2.isWaiting) {
+                            throw "deadlock!";
+                        }
+                    }
+                } catch (e) {
+                    console.log(e);
+                    console.log("Exiting");
+                }
+
+                // NOT 127 with "terminating"
+                return prog1.nrOfSends;
             }
-        }*/]
+        }]
 
         /*,bonusTests: [{
             title: "placeholder",
