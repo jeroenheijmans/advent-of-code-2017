@@ -147,7 +147,7 @@
             title: "Puzzle 2",
             expectedAnswer: null,
             testSets: [
-                { expectedAnswer: null, data: `
+                { expectedAnswer: 3, data: `
                 snd 1
                 snd 2
                 snd p
@@ -191,8 +191,9 @@
                         let incr = this.act(instructions[pos]);
                         pos += incr;
                         if (pos < 0 || pos >= instructions.length) {
-                            throw "Terminated";
+                            return 1; // Terminated
                         }
+                        return 0;
                     }
 
                     this.getOutbound = function() {
@@ -234,13 +235,11 @@
                                 break;
 
                             case "rcv":
-                                if (getreg(x) !== 0) {
-                                    if (rcv.length > 0) {
-                                        registers[x] = rcv.shift();
-                                    } else {
-                                        this.isWaiting = true;
-                                        return 0; // Wait until rcv has something
-                                    }
+                                if (rcv.length > 0) {
+                                    registers[x] = rcv.shift();
+                                } else {
+                                    this.isWaiting = true;
+                                    return 0; // Wait until rcv has something
                                 }
                                 break;
 
@@ -263,25 +262,25 @@
 
                 prog2.act({ op: "set", x: "p", y: 1 });
 
-                try {
-                    let i = 0;
-                    while (i++ < 1e6) {
-                        prog2.setInbound(prog1.getOutbound());
-                        prog1.setInbound(prog2.getOutbound());
+                let i = 0;
 
-                        prog1.step();
-                        prog2.step();
+                while (i++ < 1e6) {
+                    prog2.setInbound(prog1.getOutbound());
+                    prog1.setInbound(prog2.getOutbound());
 
-                        if (prog1.isWaiting && prog2.isWaiting) {
-                            throw "deadlock!";
-                        }
+                    if (prog1.step()) { console.log("Prog1 terminated"); break; }
+                    if (prog2.step()) { console.log("Prog2 terminated"); break; }
+
+                    if (prog1.isWaiting && prog2.isWaiting) {
+                        console.log("Deadlocked");
+                        break;
                     }
-                } catch (e) {
-                    console.log(e);
-                    console.log("Exiting");
                 }
+                
+                console.log(`Exiting after ${i} iterations`);
 
                 // NOT 127 with "terminating"
+                // NOT 8128 with "deadlocked" after 79424 iterations - answer too high
                 return prog1.nrOfSends;
             }
         }]
