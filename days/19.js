@@ -234,7 +234,6 @@
                 let idx = 0;
                 let dx = 0;
                 let dy = +1;
-                let steps = 0;
                 while (idx++ < 1e10) {
                     if (grid[y][x] === "+") {
 
@@ -258,10 +257,8 @@
 
                     x += dx;
                     y += dy;
-                    steps ++;
 
                     if (x < 0 || y < 0 || x >= grid[0].length || y >= grid.length || grid[y][x] === " ") {
-                        steps--;
                         break;
                     }
 
@@ -270,29 +267,74 @@
                     }
                 }
 
-                return steps;
+                return result;
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 17358,
             testSets: [
-                { expectedAnswer: null, data: [] },
+                { expectedAnswer: 38, data: 
+`
+     |          
+     |  +--+    
+     A  |  C    
+ F---|----E|--+ 
+     |  |  |  D 
+     +B-+  +--+
+`
+                },
             ],
             getSolution: data => {
-                let input = data;
+                let input = data.split(/\r?\n/g).filter(l => l !== "");
 
-                return "NOT FOUND";
-            }
-        }*/]
+                let grid =[];
+                
+                for (let line of input) {
+                    grid.push(line.split(""));
+                }
 
-        /*,bonusTests: [{
-            title: "placeholder",
-            test: assert => {
-                let result = "SOMETHING";
-                assert.strictEqual(result, "SOMETHING");
+                let x = -1, y = 0;
+                while (grid[0][++x] !== "|") { }
+
+                let result = "";
+                let idx = 0;
+                let dx = 0;
+                let dy = +1;
+                let steps = 0;
+                while (idx++ < 1e10) {
+                    if (grid[y][x] === "+") {
+
+                        if (dx === 0 && x > 0 && grid[y][x-1] !== " ") {
+                            dx = -1;
+                            dy = 0;
+                        } else if (dx === 0 && x < grid[y].length && grid[y][x+1] !== " ") {
+                            dx = +1;
+                            dy = 0;
+                        } else if (dy === 0 && y > 0 && grid[y-1][x] !== " ") {
+                            dx = 0;
+                            dy = -1;
+                        } else if (dy === 0 && y < grid.length && grid[y+1][x] !== " ") {
+                            dx = 0;
+                            dy = +1;
+                        } else {
+                            debugger;
+                            throw "NO DIR FOUND";
+                        }
+                    }
+
+                    steps++;
+                    x += dx;
+                    y += dy;
+
+                    if (x < 0 || y < 0 || x >= grid[0].length || y >= grid.length || grid[y][x] === " ") {
+                        break;
+                    }
+                }
+
+                return steps;
             }
-        }]*/
+        }]
     };
 }(window.aoc = window.aoc || {days:{}}));
