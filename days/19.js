@@ -234,6 +234,7 @@
                 let idx = 0;
                 let dx = 0;
                 let dy = +1;
+                let steps = 0;
                 while (idx++ < 1e10) {
                     if (grid[y][x] === "+") {
 
@@ -257,8 +258,10 @@
 
                     x += dx;
                     y += dy;
+                    steps ++;
 
                     if (x < 0 || y < 0 || x >= grid[0].length || y >= grid.length || grid[y][x] === " ") {
+                        steps--;
                         break;
                     }
 
@@ -267,7 +270,7 @@
                     }
                 }
 
-                return result;
+                return steps;
             }
         },
 
