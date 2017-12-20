@@ -1004,7 +1004,7 @@ p=<-886,2415,982>, v=<-129,344,142>, a=<9,-29,-12>`,
 
         puzzles:[{
             title: "Puzzle 1",
-            expectedAnswer: null,
+            expectedAnswer: 144,
             testSets: [
                 { expectedAnswer: 0, data: `
 p=< 3,0,0>, v=< 2,0,0>, a=<-1,0,0>
@@ -1038,53 +1038,72 @@ p=< 4,0,0>, v=< 0,0,0>, a=<-2,0,0>
                     });
 
                 let slowestInLongRun = particles.map(p => p).sort((a,b) => a.manhattanA - b.manhattanA)[0];
-                console.log(slowestInLongRun);
                 return particles.indexOf(slowestInLongRun);
-                
-
-                function distance(p) {
-                    return Math.abs(p.p.x) + Math.abs(p.p.y) + Math.abs(p.p.z);
-                }
-
-                function getFarthest() {
-                    // hack! for speed at distance once per item
-                    particles = particles.map(p => { p.dist = distance(p); return p; });
-                    return particles.sort((a,b) => a.dist - b.dist)[0];
-                }
-
-                let idx = 0;
-                while (idx++ < 1e2) {
-                    for (let p of particles) {
-                        p.p.x += p.v.x;
-                        p.p.y += p.v.y;
-                        p.p.z += p.v.z;
-                        
-                        p.v.x += p.a.x;
-                        p.v.y += p.a.y;
-                        p.v.z += p.a.z;
-                    }
-                }
-
-                let p = getFarthest();
-                console.log(p);
-                console.log(particles[1]);
-
-                return particles.indexOf(p);
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
             expectedAnswer: null,
             testSets: [
-                { expectedAnswer: null, data: [] },
+                { expectedAnswer: 1, data: `
+p=<-6,0,0>, v=< 3,0,0>, a=< 0,0,0>
+p=<-4,0,0>, v=< 2,0,0>, a=< 0,0,0>
+p=<-2,0,0>, v=< 1,0,0>, a=< 0,0,0>
+p=< 3,0,0>, v=<-1,0,0>, a=< 0,0,0>
+` },
             ],
             getSolution: data => {
-                let input = data;
+                let particles = data
+                    .split(/\r?\n/g)
+                    .map(l => l.trim())
+                    .filter(l => !!l)
+                    .map(l => {
+                        let regex = /(\s*-?\d+,\s*-?\d+,\s*-?\d+)/g;
+                        let match = regex.exec(l);
+                        let vectors = [];
+                        while (match) {
+                            vectors.push(match[0].split(",").map(x => parseInt(x, 10)));
+                            match = regex.exec(l);
+                        }
+                        return {
+                            p: vectors[0],
+                            v: vectors[1],
+                            a: vectors[2]
+                        };
+                    });
 
-                return "NOT FOUND";
+                let idx = 0;
+                while (idx++ < 1e5) {
+                    let colliders = new Set();
+
+                    for (let i = 0; i < particles.length; i++) {
+                        particles[i].p[0] += particles[i].v[0];
+                        particles[i].p[1] += particles[i].v[1];
+                        particles[i].p[2] += particles[i].v[2];
+                        particles[i].v[0] += particles[i].a[0];
+                        particles[i].v[1] += particles[i].a[1];
+                        particles[i].v[2] += particles[i].a[2];
+
+                        for (let j = i - 1; j >= 0; j--) {
+                            if (particles[i].p[0] === particles[j].p[0] 
+                                && particles[i].p[1] === particles[j].p[1]
+                                && particles[i].p[2] === particles[j].p[2]) {
+                                
+                                colliders.add(particles[i]);
+                                colliders.add(particles[j]);
+                            }
+                        }                        
+                    }
+
+                    if (colliders.size > 0) {
+                        particles = particles.filter(p => !colliders.has(p));
+                    }
+                }
+
+                return particles.length;
             }
-        }*/]
+        }]
 
         /*,bonusTests: [{
             title: "placeholder",
