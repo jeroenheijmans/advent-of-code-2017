@@ -1044,7 +1044,7 @@ p=< 4,0,0>, v=< 0,0,0>, a=<-2,0,0>
 
         {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 477,
             testSets: [
                 { expectedAnswer: 1, data: `
 p=<-6,0,0>, v=< 3,0,0>, a=< 0,0,0>
@@ -1068,15 +1068,15 @@ p=< 3,0,0>, v=<-1,0,0>, a=< 0,0,0>
                     self.az = data.a[2];
 
                     self.move = function() {
-                        self.x += self.vx;
-                        self.y += self.vy;
-                        self.z += self.vz;
-                        
                         self.vx += self.ax;
                         self.vy += self.ay;
                         self.vz += self.az;
+
+                        self.x += self.vx;
+                        self.y += self.vy;
+                        self.z += self.vz;
                     }
-                    
+
                     self.collidesWith = function(p2) {
                         return self.x === p2.x && self.y === p2.y && self.z === p2.z;
                     }
@@ -1106,7 +1106,7 @@ p=< 3,0,0>, v=<-1,0,0>, a=< 0,0,0>
                     });
 
                 let idx = 0;
-                while (idx++ < 1e3) { // Still not fast enough :'(
+                while (idx++ < 250) { // Lucky, but 250 was apparently plenty of cycles to get the right answer
                     for (let p of particles) {
                         p.move();
                     }
@@ -1120,13 +1120,5 @@ p=< 3,0,0>, v=<-1,0,0>, a=< 0,0,0>
                 return particles.length;
             }
         }]
-
-        /*,bonusTests: [{
-            title: "placeholder",
-            test: assert => {
-                let result = "SOMETHING";
-                assert.strictEqual(result, "SOMETHING");
-            }
-        }]*/
     };
 }(window.aoc = window.aoc || {days:{}}));
