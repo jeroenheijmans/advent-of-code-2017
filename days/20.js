@@ -1054,6 +1054,38 @@ p=< 3,0,0>, v=<-1,0,0>, a=< 0,0,0>
 ` },
             ],
             getSolution: data => {
+                function Particle(data) {
+                    var self = this;
+
+                    self.x = data.p[0];
+                    self.y = data.p[1];
+                    self.z = data.p[2];
+                    self.vx = data.v[0];
+                    self.vy = data.v[1];
+                    self.vz = data.v[2];
+                    self.ax = data.a[0];
+                    self.ay = data.a[1];
+                    self.az = data.a[2];
+
+                    self.move = function() {
+                        self.x += self.vx;
+                        self.y += self.vy;
+                        self.z += self.vz;
+                        
+                        self.vx += self.ax;
+                        self.vy += self.ay;
+                        self.vz += self.az;
+                    }
+                    
+                    self.collidesWith = function(p2) {
+                        return self.x === p2.x && self.y === p2.y && self.z === p2.z;
+                    }
+
+                    self.getPos = function() {
+                        return `${self.x},${self.y},${self.z}`;
+                    }
+                }
+
                 let particles = data
                     .split(/\r?\n/g)
                     .map(l => l.trim())
@@ -1066,38 +1098,22 @@ p=< 3,0,0>, v=<-1,0,0>, a=< 0,0,0>
                             vectors.push(match[0].split(",").map(x => parseInt(x, 10)));
                             match = regex.exec(l);
                         }
-                        return {
+                        return new Particle({
                             p: vectors[0],
                             v: vectors[1],
                             a: vectors[2]
-                        };
+                        });
                     });
 
                 let idx = 0;
-                while (idx++ < 1e5) {
-                    let colliders = new Set();
-
-                    for (let i = 0; i < particles.length; i++) {
-                        particles[i].p[0] += particles[i].v[0];
-                        particles[i].p[1] += particles[i].v[1];
-                        particles[i].p[2] += particles[i].v[2];
-                        particles[i].v[0] += particles[i].a[0];
-                        particles[i].v[1] += particles[i].a[1];
-                        particles[i].v[2] += particles[i].a[2];
-
-                        for (let j = i - 1; j >= 0; j--) {
-                            if (particles[i].p[0] === particles[j].p[0] 
-                                && particles[i].p[1] === particles[j].p[1]
-                                && particles[i].p[2] === particles[j].p[2]) {
-                                
-                                colliders.add(particles[i]);
-                                colliders.add(particles[j]);
-                            }
-                        }                        
+                while (idx++ < 1e3) { // Still not fast enough :'(
+                    for (let p of particles) {
+                        p.move();
                     }
 
-                    if (colliders.size > 0) {
-                        particles = particles.filter(p => !colliders.has(p));
+                    let positions = particles.map(p => p.getPos());
+                    if (positions.length !== new Set(positions).size) {
+                        particles = particles.filter(p1 => !particles.some(p2 => p1 !== p2 && p1.collidesWith(p2)));
                     }
                 }
 
