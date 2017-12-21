@@ -175,7 +175,8 @@
 
                         pattern = rotate90(pattern);
                     }
-//throw "EEk";
+
+                    throw "Unexpected: pattern not found. Pattern: " + square;
                     return null;
                 }
 
