@@ -131,49 +131,30 @@
                 ` },
             ],
             getSolution: data => {
-                function logPattern(pattern) {
-                    pattern.split("/").forEach((l,i) => console.log(`${i}  =>   ${l}`));
-                }
+                const machine = new Machine(data);
+                let grid = gridify(start);
 
-                let pattern = start.slice();
-
-                let instructions = data
-                    .split(/\r?\n/g)
-                    .map(l => l.trim())
-                    .filter(l => !!l)
-                    .map(l => {
-                        let parts = l.split(" => ").map(p => p.trim());
-                        return {
-                            pattern: parts[0],
-                            output: parts[1],
-                        };
-                    })
-                    .reduce((map, i) => {
-                        map[i.pattern] = i;
-                        return map;
-                    }, {});
-
-                // YUCK
-                let isTestPuzzle = Object.keys(instructions).length < 3;
+                // YUCK (but pragmatic)
+                let isTestPuzzle = data.length < 500;
                 let iterations = isTestPuzzle ? 2 : 5;
+                
+                for (let idx = 0; idx < iterations; idx++) {
+                    
+                    let blocks = chop(grid);
 
-                let idx = 0;
-                while (idx++ < iterations) {
-                    let thing = chop(pattern);
-
-                    for (let i = 0; i < thing.squares.length; i++) {
-                        let op = getOperation(thing.squares[i]);
+                    for (let i = 0; i < blocks.length; i++) {
+                        let op = machine.getOperation(blocks[i]);
                         if (!!op) {
-                            thing.squares[i] = op.output;
+                            blocks[i] = blockify(op.output);
                         }
                     }
 
-                    pattern = combine(thing);
+                    grid = recombine(blocks);
                 }
 
                 // Not 18
                 // Not 5
-                return pattern.match(/#/g).length;
+                return countPixels(grid);
             }
         },
 
@@ -295,6 +276,41 @@
                 ]);
             }
         },{
+            title: "Can recombine 4 blocks to grid",
+            test: assert => {
+                let blocks = [
+                    [["#","#"],["#","."]], //   ##/#.
+                    [["#","#"],[".","#"]], //   ##/.#
+                    [["#","."],["#","#"]], //   #./##
+                    [[".","#"],["#","#"]]  //   .#/##
+                ];
+
+                let result = recombine(blocks);
+
+                assert.strictEqual(patternize(result), "####/#..#/#..#/####");
+            }
+        },{
+            title: "Can recombine 9 blocks to grid",
+            test: assert => {
+                let blocks = [
+                    [["#","#","#"],["#",".","."],["#",".","."]],
+                    [["#","#","#"],[".",".","."],[".",".","."]],
+                    [["#","#","#"],[".",".","#"],[".",".","#"]],
+
+                    [["#",".","."],["#",".","."],["#",".","."]],
+                    [[".",".","."],[".",".","."],[".",".","."]], // MIDDLE BLOCK
+                    [[".",".","#"],[".",".","#"],[".",".","#"]],
+
+                    [["#",".","."],["#",".","."],["#","#","#"]],
+                    [[".",".","."],[".",".","."],["#","#","#"]],
+                    [[".",".","#"],[".",".","#"],["#","#","#"]],
+                ];
+
+                let result = recombine(blocks);
+
+                assert.strictEqual(patternize(result), "#########/#.......#/#.......#/#.......#/#.......#/#.......#/#.......#/#.......#/#########");
+            }
+        },{
             title: "Can convert 2x2 chop to pattern",
             test: assert => {
                 let chop1 = [["#","#"],[".","."]];
@@ -304,15 +320,206 @@
         },{
             title: "Can convert 3x3 chop to pattern",
             test: assert => {
-                let chop1 = [["#","#","#"],[".",".","."],[".",".","."]];
-                let pattern = patternize(chop1);
+                let block = [["#","#","#"],[".",".","."],[".",".","."]];
+                let pattern = patternize(block);
                 assert.strictEqual(pattern, "###/.../...");
+            }
+        },{
+            title: "Can rotate 3x3 block",
+            test: assert => {
+                //   ###
+                //   #..
+                //   ..#
+
+                let block = [["#","#","#"],["#",".","."],[".",".","#"]];
+                let result = rot90(block);
+                assert.strictEqual(patternize(result), ".##/..#/#.#");
+            }
+        },{
+            title: "Can rotate starting block",
+            test: assert => {
+                let block = [[".","#","."],[".",".","#"],["#","#","#"]];
+                let result = rot90(block);
+                assert.strictEqual(patternize(result), "#../#.#/##.");
+            }
+        },{
+            title: "Can rotate 2x2 block",
+            test: assert => {
+                let block = [[".","#"],["#","."]];
+                let result = rot90(block);
+                assert.strictEqual(patternize(result), "#./.#");
+            }
+        },{
+            title: "Rotating four times is idempotent",
+            test: assert => {
+                let block = [[".","#","."],[".",".","#"],["#","#","#"]];
+                let result = rot90(rot90(rot90(rot90(block))));
+                assert.deepEqual(result, block);
+            }
+        },{
+            title: "Can flipx starting block",
+            test: assert => {
+                let block = [[".","#","."],[".",".","#"],["#","#","#"]];
+                let result = flipx(block);
+                assert.strictEqual(patternize(result), ".#./#../###");
+            }
+        },{
+            title: "Can flipy starting block",
+            test: assert => {
+                let block = [[".","#","."],[".",".","#"],["#","#","#"]];
+                let result = flipy(block);
+                assert.strictEqual(patternize(result), "###/..#/.#.");
+            }
+        },{
+            title: "Flipping x twice is idempotent",
+            test: assert => {
+                let block = [[".","#","."],[".",".","#"],["#","#","#"]];
+                let result = flipx(flipx(block));
+                assert.deepEqual(result, block);
+            }
+        },{
+            title: "Flipping y twice is idempotent",
+            test: assert => {
+                let block = [[".","#","."],[".",".","#"],["#","#","#"]];
+                let result = flipy(flipy(block));
+                assert.deepEqual(result, block);
+            }
+        },{
+            title: "Machine can get basic instruction",
+            test: assert => {
+                let machine = new Machine("##/## => ###/###/###");
+                let op = machine.getOperation([["#","#"],["#","#"]]);
+                assert.strictEqual(op.output, "###/###/###");
+            }
+        },{
+            title: "Machine can get rotated instruction",
+            test: assert => {
+                let machine = new Machine("#./## => ###/###/###");
+                let op = machine.getOperation([[".","#"],["#","#"]]);
+                assert.strictEqual(op.output, "###/###/###");
+            }
+        },{
+            title: "Machine can get instruction for AoC examples",
+            test: assert => {
+                let machine = new Machine(".#./..#/### => ####/####/####/####");
+
+                assert.strictEqual(machine.getOperation(blockify(".#./..#/###")).output, "####/####/####/####");
+                assert.strictEqual(machine.getOperation(blockify(".#./#../###")).output, "####/####/####/####");
+                assert.strictEqual(machine.getOperation(blockify("#../#.#/##.")).output, "####/####/####/####");
+                assert.strictEqual(machine.getOperation(blockify("###/..#/.#.")).output, "####/####/####/####");
             }
         }]
     };
 
+    function Machine(data) {
+        let instructions = data
+            .split(/\r?\n/g)
+            .map(l => l.trim())
+            .filter(l => !!l)
+            .map(l => {
+                let parts = l.split(" => ").map(p => p.trim());
+                return {
+                    pattern: parts[0],
+                    output: parts[1],
+                };
+            })
+            .reduce((map, i) => {
+                map[i.pattern] = i;
+                return map;
+            }, {});
+            
+            this.getOperation = function(block) {
+                let pattern = "";
+                
+                for (let i = 0; i < 4; i++) {
+
+                    pattern = patternize(block);
+                    if (instructions.hasOwnProperty(pattern)) { return instructions[pattern]; }
+
+                    pattern = patternize(flipx(block));
+                    if (instructions.hasOwnProperty(pattern)) { return instructions[pattern]; }
+
+                    pattern = patternize(flipy(block));
+                    if (instructions.hasOwnProperty(pattern)) { return instructions[pattern]; }
+
+                    pattern = patternize(flipy(flipx(block)));
+                    if (instructions.hasOwnProperty(pattern)) { return instructions[pattern]; }
+
+                    block = rot90(block);
+                    if (instructions.hasOwnProperty(pattern)) { return instructions[pattern]; }
+                }
+                
+                throw "Eek!";
+            }
+
+        return this;
+    }
+
+    function flipx(block) {
+        let size = block.length;
+        let newBlock = [];
+
+        for (let rowIdx = 0; rowIdx < size; rowIdx++) {
+            for (let colIdx = 0; colIdx < size; colIdx++) {
+                newBlock[rowIdx] = newBlock[rowIdx] || [];
+                newBlock[rowIdx][size - colIdx - 1] = block[rowIdx][colIdx];
+            }
+        }
+
+        return newBlock;
+    }
+
+    function flipy(block) {
+        let size = block.length;
+        let newBlock = [];
+
+        for (let rowIdx = 0; rowIdx < size; rowIdx++) {
+            for (let colIdx = 0; colIdx < size; colIdx++) {
+                newBlock[rowIdx] = newBlock[rowIdx] || [];
+                newBlock[rowIdx][colIdx] = block[size - rowIdx - 1][colIdx];
+            }
+        }
+
+        return newBlock;
+    }
+
+    function rot90(block) {
+        let size = block.length;
+        let newBlock = [];
+
+        for (let rowIdx = 0; rowIdx < size; rowIdx++) {
+            for (let colIdx = 0; colIdx < size; colIdx++) {
+                newBlock[colIdx] = newBlock[colIdx] || [];
+                newBlock[colIdx][size - rowIdx - 1] = block[rowIdx][colIdx];
+            }
+        }
+
+        return newBlock;
+    }
+
     function patternize(chop) {
         return chop.map(row => row.join("")).join("/");
+    }
+
+    function recombine(blocks) {
+        let grid = [];
+        let nrOfBlocksPerRow = Math.sqrt(blocks.length);
+
+        for (let n = 0; n < blocks.length; n++) {
+            for (let rowIdx = 0; rowIdx < blocks[n].length; rowIdx++) {
+                for (let colIdx = 0; colIdx < blocks[n][rowIdx].length; colIdx++) {
+
+                    let blockRow = Math.floor(n / nrOfBlocksPerRow);
+                    let gridY = rowIdx + (blockRow * blocks[n].length);
+                    let gridX = colIdx + (n * blocks[n][rowIdx].length);
+
+                    grid[gridY] = grid[gridY] || [];
+                    grid[gridY][gridX] = blocks[n][rowIdx][colIdx];
+                }
+            }
+        }
+
+        return grid;
     }
 
     function chop(grid) {
@@ -340,7 +547,11 @@
     }
 
     function gridify(pattern) {
-        return pattern.split("/").map(l => l.trim().split(""));;
+        return pattern.split("/").map(l => l.trim().split(""));
+    }
+
+    function blockify(pattern) {
+        return gridify(pattern); // No difference! :D
     }
 
     function countPixels(grid) {
