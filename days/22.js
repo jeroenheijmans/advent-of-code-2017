@@ -89,18 +89,70 @@
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 2512103,
             testSets: [
-                { expectedAnswer: null, data: [] },
+                { expectedAnswer: 2511944, data: `
+                    ..#
+                    #..
+                    ...
+                ` },
             ],
             getSolution: data => {
-                let input = data;
+                let input = data.split(/\r?\n/g).map(l => l.trim()).filter(l => !!l);
+                
+                let grid = input.map(l => l.split(""));
+                let map = {};
+                
+                for (let y = 0; y < grid.length; y++) {
+                    for (let x = 0; x < grid.length; x++) {
+                        if (grid[y][x] === "#") {
+                            map[`${x}:${y}`] = "I";
+                        }
+                    }
+                }
 
-                return "NOT FOUND";
+                let posx = (grid.length - 1) / 2;
+                let posy = (grid.length - 1) / 2;
+                let dir = 0;
+                let infectionsCaused = 0;
+
+                for (let i = 0; i < 10000000; i++) {
+                    
+                    let key = `${posx}:${posy}`;
+
+                    // Turn & act:
+                    if (!map[key]) { 
+                        dir += -1;
+                        map[key] = "W";
+                    }
+                    else if (map[key] === "W") { 
+                        map[key] = "I";
+                        infectionsCaused++;
+                    }
+                    else if (map[key] === "I") { 
+                        dir += 1; 
+                        map[key] = "F";
+                    }
+                    else if (map[key] === "F") { 
+                        dir += 2; 
+                        delete map[key];
+                    }
+
+                    dir = (dir + 4) % 4;
+
+                    // The virus carrier moves forward one node in the direction it is 
+                    // facing.
+                    if (dir === 0) { posy--; }
+                    if (dir === 1) { posx++; }
+                    if (dir === 2) { posy++; }
+                    if (dir === 3) { posx--; }
+                }
+
+                return infectionsCaused;
             }
-        }*/]
+        }]
 
         /*,bonusTests: [{
             title: "placeholder",
