@@ -129,18 +129,25 @@
                     ../.# => ##./#../...
                     #../#.#/##. => #..#/..../..../#..#
                 ` },
+                { expectedAnswer: 12, data: `
+                    ##/## => ###/###/###
+                    ###/###/### => ####/####/####/####
+                    #../#.#/##. => ####/####/####/####
+                ` },
             ],
             getSolution: data => {
                 const machine = new Machine(data);
                 let grid = gridify(start);
 
                 // YUCK (but pragmatic)
-                let isTestPuzzle = data.length < 500;
+                let isTestPuzzle = data.split(/\r?\n/g).map(r => r.trim()).filter(m => !!m).length === 2;
                 let iterations = isTestPuzzle ? 2 : 5;
                 
                 for (let idx = 0; idx < iterations; idx++) {
                     
                     let blocks = chop(grid);
+
+                    if (blocks.some(b => b.some(row => row.some(x => !x)))) { throw "WHELP"; }
 
                     for (let i = 0; i < blocks.length; i++) {
                         let op = machine.getOperation(blocks[i]);
@@ -181,6 +188,20 @@
                 let input = start.slice();
                 let grid = gridify(input);
                 assert.deepEqual(grid, [[".","#","."],[".",".","#"],["#","#","#"]]);
+            }
+        },{
+            title: "Can gridify pattern '######/.#..#./#.##.#/#.#..#/##.##./...##.'",
+            test: assert => {
+                let pattern = "######/.#..#./#.##.#/#.#..#/##.##./...##.";
+                let grid = gridify(pattern);
+                assert.deepEqual(grid, [
+                    "######".split(""),
+                    ".#..#.".split(""),
+                    "#.##.#".split(""),
+                    "#.#..#".split(""),
+                    "##.##.".split(""),
+                    "...##.".split(""),
+                ]);
             }
         },{
             title: "Can count 'on' pixels in grid",
@@ -276,6 +297,24 @@
                 ]);
             }
         },{
+            title: "Can chop pattern '######/.#..#./#.##.#/#.#..#/##.##./...##.'",
+            test: assert => {
+                let pattern = "######/.#..#./#.##.#/#.#..#/##.##./...##.";
+                let grid = gridify(pattern);
+                let chops = chop(grid);
+                assert.deepEqual(chops, [
+                    [["#","#"],[".","#"]],
+                    [["#","#"],[".","."]],
+                    [["#","#"],["#","."]],
+                    [["#","."],["#","."]],
+                    [["#","#"],["#","."]],
+                    [[".","#"],[".","#"]],
+                    [["#","#"],[".","."]],
+                    [[".","#"],[".","#"]],
+                    [["#","."],["#","."]],
+                ]);
+            }
+        },{
             title: "Can recombine 4 blocks to grid",
             test: assert => {
                 let blocks = [
@@ -309,6 +348,28 @@
                 let result = recombine(blocks);
 
                 assert.strictEqual(patternize(result), "#########/#.......#/#.......#/#.......#/#.......#/#.......#/#.......#/#.......#/#########");
+            }
+        },{
+            title: "Can recombine 3 3x3 blocks to grid",
+            test: assert => {
+                // Taken from the debugger, this gave problems at one time...
+                let blocks = JSON.parse('[[["#","#","#"],[".","#","."],["#",".","#"]],[["#","#","#"],[".","#","."],["#",".","#"]],[["#",".","#"],["#","#","."],[".",".","."]],[[".",".","#"],["#","#","."],["#","#","."]]]');
+                
+                // Smoke test:
+                let grid = recombine(blocks);
+                var isSmoking = grid.some(row => row.some(cell => cell !== "#" && cell !== "."));
+                assert.strictEqual(isSmoking, false);
+            }
+        },{
+            title: "Can recombine 4 3x3 blocks to grid",
+            test: assert => {
+                // Taken from the debugger, this gave problems at one time...
+                let blocks = [[["#","#","#"],["#","#","#"],["#","#","#"]],[["#","#","#"],["#","#","#"],["#","#","#"]],[["#","#","#"],["#","#","#"],["#","#","#"]],[["#","#","#"],["#","#","#"],["#","#","#"]]];
+
+                // Smoke test:
+                let grid = recombine(blocks);
+                var isSmoking = grid.some(row => row.some(cell => cell !== "#" && cell !== "."));
+                assert.strictEqual(isSmoking, false);
             }
         },{
             title: "Can convert 2x2 chop to pattern",
@@ -518,6 +579,9 @@
                 }
             }
         }
+
+        // workaround for bug (not sure where it is exactly!):
+        grid = grid.map(row => row.filter(cell => cell === "#" || cell === "."));
 
         return grid;
     }
