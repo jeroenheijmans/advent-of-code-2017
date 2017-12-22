@@ -131,6 +131,10 @@
                 ` },
             ],
             getSolution: data => {
+                function logPattern(pattern) {
+                    pattern.split("/").forEach((l,i) => console.log(`${i}  =>   ${l}`));
+                }
+
                 let pattern = start.slice();
 
                 let instructions = data
@@ -149,37 +153,6 @@
                         return map;
                     }, {});
 
-
-                function getOperation(square) {
-                    let pattern = square.slice();
-
-                    for (let rot = 0; rot < 5; rot++) {
-                        if (instructions.hasOwnProperty(pattern)) {
-                            return instructions[pattern];
-                        }
-                        
-                        let x = flipX(pattern);
-                        if (instructions.hasOwnProperty(x)) {
-                            return instructions[x];
-                        }
-                        
-                        let y = flipY(pattern);
-                        if (instructions.hasOwnProperty(y)) {
-                            return instructions[y];
-                        }
-                        
-                        let z = flipX(flipY(pattern));
-                        if (instructions.hasOwnProperty(z)) {
-                            return instructions[z];
-                        }
-
-                        pattern = rotate90(pattern);
-                    }
-
-                    throw "Unexpected: pattern not found. Pattern: " + square;
-                    return null;
-                }
-
                 // YUCK
                 let isTestPuzzle = Object.keys(instructions).length < 3;
                 let iterations = isTestPuzzle ? 2 : 5;
@@ -197,8 +170,6 @@
 
                     pattern = combine(thing);
                 }
-
-                pattern.split("/").forEach((l,i) => console.log(`${i}  =>   ${l}`));
 
                 // Not 18
                 // Not 5
@@ -220,183 +191,162 @@
         }*/]
 
         ,bonusTests: [{
-            title: "Example rotate90 x 1 works",
+            title: "Can gridify base pattern into grid",
             test: assert => {
+                //   .#.
+                //   ..#
+                //   ###
+
                 let input = start.slice();
-                let output = rotate90(input);
-                assert.strictEqual(output, "#../#.#/##.");
+                let grid = gridify(input);
+                assert.deepEqual(grid, [[".","#","."],[".",".","#"],["#","#","#"]]);
             }
         },{
-            title: "Example rotate90 x 2 works",
+            title: "Can count 'on' pixels in grid",
             test: assert => {
+                //   .#.
+                //   ..#
+                //   ###
+
                 let input = start.slice();
-                let output = rotate90(rotate90(input));
-                assert.strictEqual(output, "###/#../.#.");
+                let grid = gridify(input);
+                let result = countPixels(grid);
+                assert.deepEqual(result, 5);
             }
         },{
-            title: "Example rotate90 x 3 works",
+            title: "Can chop 4x4 grid into 2x2 blocks",
             test: assert => {
-                let input = start.slice();
-                let output = rotate90(rotate90(rotate90(input)));
-                assert.strictEqual(output, ".##/#.#/..#");
+                //   ####
+                //   #..#
+                //   #..#
+                //   ####
+
+                let grid = gridify("####/#..#/#..#/####");
+                let chops = chop(grid);
+
+                assert.deepEqual(chops, [
+                    [["#","#"],["#","."]], //   ##/#.
+                    [["#","#"],[".","#"]], //   ##/.#
+                    [["#","."],["#","#"]], //   #./##
+                    [[".","#"],["#","#"]]  //   .#/##
+                ]);
             }
         },{
-            title: "Example rotate90 x 4 works",
+            title: "Can chop 6x6 grid into 2x2 blocks",
             test: assert => {
-                let input = start.slice();
-                let output = rotate90(rotate90(rotate90(rotate90(input))));
-                assert.strictEqual(output, input);
+                //   ######
+                //   #....#
+                //   #....#
+                //   #....#
+                //   #....#
+                //   ######
+
+                let grid = gridify("######/#....#/#....#/#....#/#....#/######");
+                let chops = chop(grid);
+
+                assert.deepEqual(chops, [
+                    [["#","#"],["#","."]], //   ##/#.
+                    [["#","#"],[".","."]], //   ##/..
+                    [["#","#"],[".","#"]], //   ##/.#
+
+                    [["#","."],["#","."]], //   #./#.
+                    [[".","."],[".","."]], //   .../..
+                    [[".","#"],[".","#"]], //   .#/.#
+
+                    [["#","."],["#","#"]], //   #./##
+                    [[".","."],["#","#"]], //   ../##
+                    [[".","#"],["#","#"]], //   .#/##
+                ]);
             }
         },{
-            title: "Chop works A",
+            title: "Can chop 9x9 grid into 3x3 blocks",
             test: assert => {
-                let input = "..../##../..##/####";
-                let output = chop(input);
-                assert.strictEqual(output.squares[0], "../##");
-                assert.strictEqual(output.squares[1], "../##");
-                assert.strictEqual(output.squares[2], "../..");
-                assert.strictEqual(output.squares[3], "##/##");
+                //   ###  ###  ###
+                //   #..  ...  ..#
+                //   #..  ...  ..#
+                //
+                //   #..  ...  ..#
+                //   #..  ...  ..#
+                //   #..  ...  ..#
+                //
+                //   #..  ...  ..#
+                //   #..  ...  ..#
+                //   ###  ###  ###
+
+                let grid = gridify("#########/#.......#/#.......#/#.......#/#.......#/#.......#/#.......#/#.......#/#########");
+                let chops = chop(grid);
+
+                let chopPatterns = chops.map(ch => {
+                    return
+                })
+
+                assert.deepEqual(chops, [
+                    [["#","#","#"],["#",".","."],["#",".","."]],
+                    [["#","#","#"],[".",".","."],[".",".","."]],
+                    [["#","#","#"],[".",".","#"],[".",".","#"]],
+
+                    [["#",".","."],["#",".","."],["#",".","."]],
+                    [[".",".","."],[".",".","."],[".",".","."]], // MIDDLE BLOCK
+                    [[".",".","#"],[".",".","#"],[".",".","#"]],
+
+                    [["#",".","."],["#",".","."],["#","#","#"]],
+                    [[".",".","."],[".",".","."],["#","#","#"]],
+                    [[".",".","#"],[".",".","#"],["#","#","#"]],
+                ]);
             }
         },{
-            title: "Chop works B",
+            title: "Can convert 2x2 chop to pattern",
             test: assert => {
-                let input = "####/####/####/####";
-                let output = chop(input);
-                assert.strictEqual(output.squares[0], "##/##");
-                assert.strictEqual(output.squares[1], "##/##");
-                assert.strictEqual(output.squares[2], "##/##");
-                assert.strictEqual(output.squares[3], "##/##");
+                let chop1 = [["#","#"],[".","."]];
+                let pattern = patternize(chop1);
+                assert.strictEqual(pattern, "##/..");
             }
         },{
-            title: "Chop works C",
+            title: "Can convert 3x3 chop to pattern",
             test: assert => {
-                let input = "####/#..#/#..#/####";
-                let output = chop(input);
-                assert.strictEqual(output.squares[0], "##/#.");
-                assert.strictEqual(output.squares[1], "#./##");
-                assert.strictEqual(output.squares[2], "##/.#");
-                assert.strictEqual(output.squares[3], ".#/##");
-            }
-        },{
-            title: "Combine works",
-            test: assert => {
-                let input = "####/####/####/####";
-                let output = combine(chop(input));
-                assert.strictEqual(output, input);
-            }
-        },{
-            title: "Combine is reverse of chop",
-            test: assert => {
-                let input = "####/#..#/#..#/####";
-                let output = combine(chop(input));
-                assert.strictEqual(output, input);
-            }
-        },{
-            title: "Can flipX start pos",
-            test: assert => {
-                let input = start.slice();
-                let output = flipX(input);
-                assert.strictEqual(output, ".#./#../###");
-            }
-        },{
-            title: "Can flipY start pos",
-            test: assert => {
-                let input = start.slice();
-                let output = flipY(input);
-                assert.strictEqual(output, "###/..#/.#.");
+                let chop1 = [["#","#","#"],[".",".","."],[".",".","."]];
+                let pattern = patternize(chop1);
+                assert.strictEqual(pattern, "###/.../...");
             }
         }]
     };
 
-    function combine(chop) {
-        let root = Math.sqrt(chop.squares.length);
-        let squareLength = chop.squares[0].split("/").length;
-        let max = root * squareLength;
-        let lines = [];
-        
-        for (let squareIdx = 0; squareIdx < chop.squares.length; squareIdx++) {
+    function patternize(chop) {
+        return chop.map(row => row.join("")).join("/");
+    }
 
-            let squareLines = chop.squares[squareIdx].split("/");
+    function chop(grid) {
+        let gridSize = grid.length; // Size of a line *is* size of a *square* grid
+        let divisor = (gridSize % 2 === 0) ? 2 : 3;
+        let blocksPerRow = gridSize / divisor;
+        let blockRow = 0;
+        let rowInBlock = 0;
 
-            for (let sqlineIdx = 0; sqlineIdx < squareLines.length; sqlineIdx++) {
+        let blocks = [];
 
-                let part = squareLines[sqlineIdx];
-                let squareRowIdx = squareIdx % root;
-                let lineIdx = sqlineIdx + (squareRowIdx * squareLines.length);
+        for (let y = 0; y < gridSize; y++) {
+            blockRow = Math.floor(y / divisor);
 
-                lines[lineIdx] = !lines[lineIdx] ? part : (lines[lineIdx] + part);
+            for (let x = 0, n = 0; x < gridSize; x += divisor, n++) {
+                let idx = (blockRow * blocksPerRow) + n;
+                let chunk = grid[y].slice(x, x + divisor);
+
+                blocks[idx] = blocks[idx] || [];
+                blocks[idx].push(chunk);
             }
         }
 
-        return lines.join("/");
+        return blocks;
     }
 
-    function chop(input) {
-        let lines = input.split("/");
-        let size = lines.length;
-        let divisor = (size % 2 === 0) ? 2 : (size % 3 === 0 ? 3 : "???");
-        let squares = [];
-
-        for (let i = 0; i < size; i++) {
-            for (let offset = 0; offset < size; offset += divisor) {
-                let miniLine = lines[i].slice(offset, offset + divisor);
-                let squareIndex = offset + Math.floor(i / divisor);
-
-                squares[squareIndex] = !squares[squareIndex] ? miniLine : (squares[squareIndex] + "/" + miniLine);
-            }
-        }
-
-        return { divisor: divisor, squares: squares };
+    function gridify(pattern) {
+        return pattern.split("/").map(l => l.trim().split(""));;
     }
 
-    function toGrid(pattern) {
-        return pattern
-            .split("/")
-            .map(l => l.split(""));
-    }
-
-    function toPattern(grid) {
+    function countPixels(grid) {
         return grid
-            .map(l => l.join(""))
-            .join("/");
+            .map(l => l.reduce((a, b) => a + (b === "#" ? 1 : 0), 0))
+            .reduce((a,b) => a + b, 0);
     }
 
-    function flipX(pattern) {
-        let grid = toGrid(pattern);
-        let newGrid = grid.slice().map(l => l.slice());
-
-        for (let y = 0; y < grid.length; y++) {
-            for (let x = 0; x < grid.length; x++) {
-                newGrid[y][x] = grid[y][grid.length - x - 1];
-            }
-        }
-
-        return toPattern(newGrid);
-    }
-
-    function flipY(pattern) {
-        let grid = toGrid(pattern);
-        let newGrid = grid.slice().map(l => l.slice());
-
-        for (let y = 0; y < grid.length; y++) {
-            for (let x = 0; x < grid.length; x++) {
-                newGrid[y][x] = grid[grid.length - y - 1][x];
-            }
-        }
-
-        return toPattern(newGrid);
-    }
-
-    function rotate90(pattern) {
-        let grid = toGrid(pattern);
-        let newGrid = grid.slice().map(l => l.slice());
-
-        for (let y = 0; y < grid.length; y++) {
-            for (let x = 0; x < grid.length; x++) {
-                newGrid[x][grid.length - y - 1] = grid[y][x];
-            }
-        }
-
-        return toPattern(newGrid);
-    }
 }(window.aoc = window.aoc || {days:{}}));
