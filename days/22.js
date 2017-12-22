@@ -40,10 +40,10 @@
             ],
             getSolution: data => {
                 let input = data.split(/\r?\n/g).map(l => l.trim()).filter(l => !!l);
-                
+
                 let grid = input.map(l => l.split(""));
                 let map = {};
-                
+
                 for (let y = 0; y < grid.length; y++) {
                     for (let x = 0; x < grid.length; x++) {
                         if (grid[y][x] === "#") {
@@ -58,18 +58,12 @@
                 let infectionsCaused = 0;
 
                 for (let i = 0; i < 10000; i++) {
-                    
+
                     let key = `${posx}:${posy}`;
 
-                    // If the current node is infected, it turns to its right. Otherwise, it 
-                    // turns to its left. (Turning is done in-place; the current node does 
-                    // not change.)
                     dir += map.hasOwnProperty(key) ? +1 : -1;
                     dir = (dir + 4) % 4;
 
-                    // If the current node is clean, it becomes infected. Otherwise, it 
-                    // becomes cleaned. (This is done after the node is considered for the 
-                    // purposes of changing direction.)
                     if (map.hasOwnProperty(key)) {
                         delete map[key];
                     } else {
@@ -77,8 +71,6 @@
                         infectionsCaused++;
                     }
 
-                    // The virus carrier moves forward one node in the direction it is 
-                    // facing.
                     if (dir === 0) { posy--; }
                     if (dir === 1) { posx++; }
                     if (dir === 2) { posy++; }
@@ -101,10 +93,10 @@
             ],
             getSolution: data => {
                 let input = data.split(/\r?\n/g).map(l => l.trim()).filter(l => !!l);
-                
+
                 let grid = input.map(l => l.split(""));
                 let map = {};
-                
+
                 for (let y = 0; y < grid.length; y++) {
                     for (let x = 0; x < grid.length; x++) {
                         if (grid[y][x] === "#") {
@@ -118,31 +110,33 @@
                 let dir = 0;
                 let infectionsCaused = 0;
 
-                for (let i = 0; i < 10000000; i++) {
-                    
-                    let key = `${posx}:${posy}`;
+                let keys = {};
+
+                for (let i = 0; i < 10e6; i++) {
+
+                    let key = posx + ":" + posy;
 
                     // Turn & act:
-                    if (!map[key]) { 
+                    if (!map[key]) {
                         dir += -1;
                         map[key] = "W";
                     }
-                    else if (map[key] === "W") { 
+                    else if (map[key] === "W") {
                         map[key] = "I";
                         infectionsCaused++;
                     }
-                    else if (map[key] === "I") { 
-                        dir += 1; 
+                    else if (map[key] === "I") {
+                        dir += 1;
                         map[key] = "F";
                     }
-                    else if (map[key] === "F") { 
-                        dir += 2; 
-                        delete map[key];
+                    else if (map[key] === "F") {
+                        dir += 2;
+                        map[key] = false;
                     }
 
                     dir = (dir + 4) % 4;
 
-                    // The virus carrier moves forward one node in the direction it is 
+                    // The virus carrier moves forward one node in the direction it is
                     // facing.
                     if (dir === 0) { posy--; }
                     if (dir === 1) { posx++; }
@@ -153,13 +147,5 @@
                 return infectionsCaused;
             }
         }]
-
-        /*,bonusTests: [{
-            title: "placeholder",
-            test: assert => {
-                let result = "SOMETHING";
-                assert.strictEqual(result, "SOMETHING");
-            }
-        }]*/
     };
 }(window.aoc = window.aoc || {days:{}}));
