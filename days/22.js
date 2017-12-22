@@ -30,7 +30,7 @@
 
         puzzles:[{
             title: "Puzzle 1",
-            expectedAnswer: null,
+            expectedAnswer: 5330,
             testSets: [
                 { expectedAnswer: 5587, data: `
                     ..#
@@ -43,7 +43,7 @@
                 
                 let grid = input.map(l => l.split(""));
                 let map = {};
-
+                
                 for (let y = 0; y < grid.length; y++) {
                     for (let x = 0; x < grid.length; x++) {
                         if (grid[y][x] === "#") {
@@ -85,7 +85,6 @@
                     if (dir === 3) { posx--; }
                 }
 
-                // NOT 5530
                 return infectionsCaused;
             }
         },
