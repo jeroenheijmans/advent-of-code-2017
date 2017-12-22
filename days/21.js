@@ -115,7 +115,7 @@
 
         puzzles:[{
             title: "Puzzle 1",
-            expectedAnswer: null,
+            expectedAnswer: 186,
             testSets: [
                 { expectedAnswer: 12, data: `
                     ../.# => ##./#../...
@@ -129,7 +129,7 @@
                     ../.# => ##./#../...
                     #../#.#/##. => #..#/..../..../#..#
                 ` },
-                { expectedAnswer: 12, data: `
+                { expectedAnswer: 324, data: `
                     ##/## => ###/###/###
                     ###/###/### => ####/####/####/####
                     #../#.#/##. => ####/####/####/####
@@ -143,11 +143,8 @@
                 let isTestPuzzle = data.split(/\r?\n/g).map(r => r.trim()).filter(m => !!m).length === 2;
                 let iterations = isTestPuzzle ? 2 : 5;
                 
-                for (let idx = 0; idx < iterations; idx++) {
-                    
+                for (let idx = 0; idx < iterations; idx++) {                    
                     let blocks = chop(grid);
-
-                    if (blocks.some(b => b.some(row => row.some(x => !x)))) { throw "WHELP"; }
 
                     for (let i = 0; i < blocks.length; i++) {
                         let op = machine.getOperation(blocks[i]);
@@ -159,24 +156,36 @@
                     grid = recombine(blocks);
                 }
 
-                // Not 18
-                // Not 5
                 return countPixels(grid);
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 3018423,
             testSets: [
-                { expectedAnswer: null, data: [] },
             ],
             getSolution: data => {
-                let input = data;
+                const machine = new Machine(data);
+                let grid = gridify(start);
+                let iterations = 18;
+                
+                for (let idx = 0; idx < iterations; idx++) {
+                    let blocks = chop(grid);
 
-                return "NOT FOUND";
+                    for (let i = 0; i < blocks.length; i++) {
+                        let op = machine.getOperation(blocks[i]);
+                        if (!!op) {
+                            blocks[i] = blockify(op.output);
+                        }
+                    }
+
+                    grid = recombine(blocks);
+                }
+
+                return countPixels(grid);
             }
-        }*/]
+        }]
 
         ,bonusTests: [{
             title: "Can gridify base pattern into grid",
