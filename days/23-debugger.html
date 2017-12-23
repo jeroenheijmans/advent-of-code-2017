@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Advent of Code 2017 - Jeroen Heijmans</title>
+        <link rel="icon" href="favicon.png">
+        <style>
+            body {
+                font-family: consolas, monospace;
+                color: #222;
+                background: ivory;
+                position: relative;
+            }
+
+            #container {
+                display: flex;
+                width: 100%;
+            }
+
+            #program {
+                font-size: 14px;
+                width: 8em;
+            }
+
+            #program div {
+                margin: 0;
+                padding: 4px 8px;
+                border: 1px solid #999;
+                background: #ccc;
+            }
+
+            #program div.active {
+                background: lime;
+            }
+
+            .buttons {
+                position: fixed;
+                bottom: 10px;
+                right: 10px;
+            }
+            
+            button {
+                font-size: 24px;
+                margin-top: 8px;
+            }
+
+            #registers .line {
+                display: flex;
+                margin-bottom: 0.5em;
+            }
+
+            #registers .line .reg {
+                margin: 0 0 0 20px;
+                border: 1px solid #999;
+                background: #fafafa;
+                padding: 8px;
+                width: 4em;
+            }
+
+            #registers .line .reg.changed {
+                background: pink;
+            }
+
+            #registers .line .reg:first-line {
+                color: #aaa;
+            }
+            
+            #registers .line .reg:first-child {
+                color: #aaa;
+                font-size: 11px;
+                width: 8em;
+            }
+            
+            #registers .line .reg:first-child:first-line {
+                font-size: 14px;
+            }
+
+            .jnz {
+                color: red;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <div id="program"></div>
+            <div id="registers"></div>
+        </div>
+        <div class="buttons">
+            <button id="playpause">Play/Pause</button><br>
+            <button id="setg0">set g 0</button><br>
+            <button id="forcemove">Force +1 pos</button><br>
+            <button id="next">Next</button>
+        </p>
+
+        <script src="../lib/lodash.min.js"></script>
+        <script src="../days/23.js"></script>
+
+        <script>
+        (function() {
+            const program = `
+                set b 67
+                set c b
+                jnz a 2
+                jnz 1 5
+                mul b 100
+                add b 100000
+                set c b
+                add c 17000
+                    set f 1
+                    set d 2
+                        set e 2
+                            set g d
+                            mul g e
+                            sub g b
+                            jnz g 2
+                            set f 0
+                            add e 1
+                            set g e
+                            sub g b
+                            jnz g -8
+                        add d 1
+                        set g d
+                        sub g b
+                        jnz g -13
+                    jnz f 2
+                    add h 1
+                    set g b
+                    sub g c
+                    jnz g 2
+                    jnz 1 3
+                    add b 17
+                    jnz 1 -23
+            `;
+
+            const programElement = document.getElementById("program");
+            const registersElement = document.getElementById("registers");
+
+            let machine = new aoc.days["23"].Machine(program, {a:0});
+            let speed = 300;
+            let instructionElements = [];
+            let instruct = machine.getInstructions().map(inst => `${inst.op} ${inst.x} ${inst.y}`);
+            let isPaused = true;
+            let previousRegValues = JSON.parse(JSON.stringify(machine.getRegisters()));
+
+            for (let inst of machine.getInstructions()) {
+                let el = programElement.appendChild(document.createElement("div"));
+                el.innerHTML = `${inst.op} ${inst.x} ${inst.y}`;
+                el.classList.add(inst.op);
+                instructionElements.push(el);
+            }
+
+            function addDiv(parentElement, text, cssClassList = []) {
+                let el = parentElement.appendChild(document.createElement("div"));
+                el.innerHTML = text || "";
+                if (Array.isArray(cssClassList)) {
+                    cssClassList.forEach(i => el.classList.add(i));
+                } else {
+                    el.classList.add(cssClassList);
+                }
+                return el;
+            }
+
+            function prependDiv(parentElement, text, cssClassList = []) {
+                let el = document.createElement("div");
+                parentElement.insertBefore(el, parentElement.firstChild);
+                el.innerHTML = text || "";
+                if (Array.isArray(cssClassList)) {
+                    cssClassList.forEach(i => el.classList.add(i));
+                } else {
+                    el.classList.add(cssClassList);
+                }
+                return el;
+            }
+
+            function addRegistersLine() {
+                let lineElement = prependDiv(registersElement, "", "line");
+                let pos = machine.getPos();
+                addDiv(lineElement, `00000${pos}`.substr(-6) + "<br>" + instruct[pos], "reg");
+                let regs = machine.getRegisters();
+                Object.keys(regs).forEach(k => {
+                    let wasChanged = previousRegValues[k] !== regs[k];
+                    let classes = wasChanged ? ["reg","changed"] : ["reg"];
+                    addDiv(lineElement, `${k}<br>${regs[k]}`, classes);
+                });
+                previousRegValues = JSON.parse(JSON.stringify(regs));
+            }
+
+            function step() {
+                instructionElements[machine.getPos()].classList.remove("active");
+                machine.step();
+                instructionElements[machine.getPos()].classList.add("active");
+                addRegistersLine();
+            }
+
+            function tick() {
+                if (!isPaused) { step(); }
+                setTimeout(() => tick(), speed);
+            }
+
+            function forceMove() {
+                instructionElements[machine.getPos()].classList.remove("active");
+                machine.debugger.movePos(+1);
+                instructionElements[machine.getPos()].classList.add("active");
+            }
+
+            function setg0() {
+                machine.debugger.setRegister("g", 0);
+                addRegistersLine();
+            }
+
+            document.getElementById("next").addEventListener("click", () => step());
+            document.getElementById("playpause").addEventListener("click", () => isPaused = !isPaused);
+            document.getElementById("forcemove").addEventListener("click", () => forceMove());
+            document.getElementById("setg0").addEventListener("click", () => setg0());
+
+            tick();
+            instructionElements[0].classList.add("active");
+            addRegistersLine();
+        }());
+        </script>
+
+        <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+    </body>
+</html>

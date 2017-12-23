@@ -5,7 +5,7 @@
             set c b
             jnz a 2
             jnz 1 5
-            mul b 100
+            mul b 1
             add b 100000
             set c b
             add c 17000
@@ -82,6 +82,10 @@
                             registers[x] -= getRegisterOrValue(y);
                             break;
 
+                        case "add":
+                            registers[x] += getRegisterOrValue(y);
+                            break;
+
                         case "mul":
                             registers[x] *= getRegisterOrValue(y);
                             result++;
@@ -129,9 +133,17 @@
     function Machine(data, initialRegisters = {}) {
         const self = this;
         let pos = 0;
+        self.getPos = () => pos;
+        self.getInstructions = () => instructions; // Mutable, but oh well, it's puzzles not production...
+        self.getRegisters = () => registers; // Mutable, but oh well, it's puzzles not production...
         self.hasHalted = false;
         self.step = step;
         self.getRegisterOrValue = getRegisterOrValue;
+
+        self.debugger = {
+            movePos: x => pos += x,
+            setRegister: (x, y) => registers[x] = y
+        };
 
         let instructions = data
             .trim()
@@ -199,5 +211,7 @@
             }
         }
     }
+
+    aoc.days["23"].Machine = Machine;
 
 }(window.aoc = window.aoc || {days:{}}));
