@@ -36,7 +36,7 @@
 
         puzzles:[{
             title: "Puzzle 1",
-            expectedAnswer: null,
+            expectedAnswer: 4225,
             testSets: [
             ],
             getSolution: data => {
@@ -68,7 +68,7 @@
                 let i = 0;
                 let pos = 0;
 
-                while (i++ < 1e3) {
+                while (i++ < 1e6) {
                     let {op, x, y} = instructions[pos];
                     let incr = 0;
                     
@@ -103,10 +103,6 @@
                     }
                 }
 
-                // NOT 2
-                // NOT 1 :'(
-                // NOT 166
-                // NOT 124
                 return result;
             }
         },
