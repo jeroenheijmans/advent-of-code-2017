@@ -35,7 +35,7 @@ Here's what I learned (or noticed) each day.
 20. Guesstimating the solution *can* sometimes make you effective. ([Day 20: Particle Swarm](http://adventofcode.com/2017/day/20))
 21. TDD to the rescue when 2D array manipulation turns out to be *too* hard. ([Day 21: Fractal Art](http://adventofcode.com/2017/day/21))
 22. **Data Structures are more important than language features.** ([Day 22: Sporifica Virus](http://adventofcode.com/2017/day/22))
-23. I am *really* terrible at low-level code. ([http://adventofcode.com/2017/day/23](http://adventofcode.com/2017/day/23))
+23. I am *really* terrible at low-level code. ([Day 23: Coprocessor Conflagration](http://adventofcode.com/2017/day/23))
 24. ??? ([404](http://adventofcode.com/2017/day/24))
 25. ??? ([404](http://adventofcode.com/2017/day/25))
 
