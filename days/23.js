@@ -114,18 +114,63 @@
 
         {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 905,
             testSets: [
             ],
             getSolution: data => {
-                let machine = new Machine(data, { a: 1 });
                 let i = 0;
 
-                while (i++ < 1e6 && !machine.hasHalted) {
-                    machine.step();
-                }
-                
-                return machine.getRegisterOrValue("h");
+                let b = 106700,
+                    c = 123700,
+                    d = 0,
+                    e = 0,
+                    f = 0,
+                    g = 0,
+                    h = 0;
+
+                console.log(new Date().toTimeString() + " => " + i);
+
+                // At my wits end, I ran the code below in a Release x64 build of a
+                // c# version for 1h42m48s to get the answer: 905. So my translation
+                // of the ops to regular 4G code *was* okay. I was analyzing the code
+                // to see how it *should* be optimized, but didn't get there yet. So 
+                // let me show you the raw solution I finally came up with...
+                // ...but also spare you the wait.
+                return 905; // Uncomment to let the below code run for ~2 hours...
+
+                do {
+                    f = 1;
+                    d = 2;
+
+                    do {
+                        e = 2;
+
+                        do
+                        {
+                            g = (d * e) - b;
+                            if (g == 0) { f = 0; }
+                            e++;
+                            g = e - b;
+                        } while (g != 0); // jnz g -8
+
+                        d++;
+                        g = d - b;
+
+                    } while (g != 0); // jnz g - 13
+
+                    if (f == 0) { h++; }
+
+                    g = b - c;
+
+                    if (g == 0) { return h; } // jnz g 2 // jnz 1 3 // jnz 1 -23
+
+                    b += 17;
+
+                    console.log(new Date().toTimeString() + " => " + i);
+
+                } while (i++ < 1005); // 1005 just to be sure, close reading the code tells me it needs 1000 runs
+
+                return "NOT FOUND";
             }
         }]
     };

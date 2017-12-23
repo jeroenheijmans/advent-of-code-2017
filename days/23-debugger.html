@@ -134,8 +134,8 @@
             const programElement = document.getElementById("program");
             const registersElement = document.getElementById("registers");
 
-            let machine = new aoc.days["23"].Machine(program, {a:0});
-            let speed = 300;
+            let machine = new aoc.days["23"].Machine(program, {a:1});
+            let speed = 100;
             let instructionElements = [];
             let instruct = machine.getInstructions().map(inst => `${inst.op} ${inst.x} ${inst.y}`);
             let isPaused = true;
