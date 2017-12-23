@@ -88,7 +88,7 @@
 
                         case "jnz":
                             if (getRegisterOrValue(x) !== 0) {
-                                pos += getRegisterOrValue(y);
+                                incr = getRegisterOrValue(y);
                             }
                             break;
 
@@ -106,6 +106,7 @@
                 // NOT 2
                 // NOT 1 :'(
                 // NOT 166
+                // NOT 124
                 return result;
             }
         },
