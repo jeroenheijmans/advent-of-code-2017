@@ -70,8 +70,8 @@
 
                         return {
                             op: parts[0],
-                            x: parseInt(parts[1], 10) || parts[1],
-                            y: parts.length < 2 ? null : (parseInt(parts[2], 10) || parts[2])
+                            x: parts[1].match(/[a-z]/i) ? parts[1] : parseInt(parts[1], 10),
+                            y: parts.length <= 2 ? null : (parts[2].match(/[a-z]/i) ? parts[2] : parseInt(parts[2], 10))
                         };
                     });
 
@@ -166,8 +166,8 @@
                             let parts = i.split(" ");
                             return {
                                 op: parts[0],
-                                x: parseInt(parts[1], 10) || parts[1],
-                                y: parts.length < 2 ? null : (parseInt(parts[2], 10) || parts[2])
+                                x: parts[1].match(/[a-z]/i) ? parts[1] : parseInt(parts[1], 10),
+                                y: parts.length <= 2 ? null : (parts[2].match(/[a-z]/i) ? parts[2] : parseInt(parts[2], 10))
                             };
                         });
 
