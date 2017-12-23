@@ -118,59 +118,25 @@
             testSets: [
             ],
             getSolution: data => {
-                let i = 0;
-
                 let b = 106700,
-                    c = 123700,
-                    d = 0,
-                    e = 0,
-                    f = 0,
-                    g = 0,
+                    c = b + 17e3,
                     h = 0;
 
-                console.log(new Date().toTimeString() + " => " + i);
-
-                // At my wits end, I ran the code below in a Release x64 build of a
-                // c# version for 1h42m48s to get the answer: 905. So my translation
-                // of the ops to regular 4G code *was* okay. I was analyzing the code
-                // to see how it *should* be optimized, but didn't get there yet. So 
-                // let me show you the raw solution I finally came up with...
-                // ...but also spare you the wait.
-                return 905; // Uncomment to let the below code run for ~2 hours...
+                // By @Saka7 at https://stackoverflow.com/a/40200710/419956
+                const isPrime = num => {
+                    for(let i = 2, s = Math.sqrt(num); i <= s; i++)
+                        if(num % i === 0) return false; 
+                    return num !== 1;
+                }
 
                 do {
-                    f = 1;
-                    d = 2;
+                    // This optimizes the inner -8 and -13 jnz loops that are
+                    // actually checking for (non-)prime numbers.
+                    if (!isPrime(b)) { h++; }
 
-                    do {
-                        e = 2;
-
-                        do
-                        {
-                            g = (d * e) - b;
-                            if (g == 0) { f = 0; }
-                            e++;
-                            g = e - b;
-                        } while (g != 0); // jnz g -8
-
-                        d++;
-                        g = d - b;
-
-                    } while (g != 0); // jnz g - 13
-
-                    if (f == 0) { h++; }
-
-                    g = b - c;
-
-                    if (g == 0) { return h; } // jnz g 2 // jnz 1 3 // jnz 1 -23
-
+                    if (b == c) { return h; } // jnz g 2 // jnz 1 3 // jnz 1 -23
                     b += 17;
-
-                    console.log(new Date().toTimeString() + " => " + i);
-
-                } while (i++ < 1005); // 1005 just to be sure, close reading the code tells me it needs 1000 runs
-
-                return "NOT FOUND";
+                } while (true);
             }
         }]
     };
