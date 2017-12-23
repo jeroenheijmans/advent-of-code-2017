@@ -107,25 +107,61 @@
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
             expectedAnswer: null,
             testSets: [
-                { expectedAnswer: null, data: [] },
             ],
             getSolution: data => {
-                let input = data;
+                let reg = _.range(97,105)
+                    .map(c => String.fromCharCode(c))
+                    .reduce((r, c) => {
+                        r[c] = 0;
+                        return r;
+                    }, {});
+                
+                reg["a"] = 1;
 
-                return "NOT FOUND";
-            }
-        }*/]
+                let i = 0;
+                let skip = 0;
 
-        /*,bonusTests: [{
-            title: "placeholder",
-            test: assert => {
-                let result = "SOMETHING";
-                assert.strictEqual(result, "SOMETHING");
+                while (i++ < 1e7) {
+                /* set b 67       */ if (--skip <= 0) { reg.b = 67; }
+                /* set c b        */ if (--skip <= 0) { reg.c = reg.b; }
+                /* jnz a 2        */ if (--skip <= 0) { if (reg.a !== 0) { skip = 2; } }
+                /* jnz 1 5        */ if (--skip <= 0) { skip = 5; }
+                /* mul b 100      */ if (--skip <= 0) { reg.b *= 100; }
+                /* sub b -100000  */ if (--skip <= 0) { reg.b += 100000; }
+                /* set c b        */ if (--skip <= 0) { reg.c = reg.b; }
+                /* sub c -17000   */ if (--skip <= 0) { reg.c += 17000; }
+                /* set f 1        */ if (--skip <= 0) { reg.f = 1; }
+                /* set d 2        */ if (--skip <= 0) { reg.d = 2; }
+                /* set e 2        */ if (--skip <= 0) { reg.e = 2; } ///
+                /* set g d        */ if (--skip <= 0) { reg.g = reg.d; }
+                /* mul g e        */ if (--skip <= 0) { reg.g *= reg.e; }
+                /* sub g b        */ if (--skip <= 0) { reg.g -= reg.b; }
+                /* jnz g 2        */ if (--skip <= 0) { if (reg.g !== 0) { skip = 2; } }
+                /* set f 0        */ if (--skip <= 0) { reg.f = 0; }
+                /* sub e -1       */ if (--skip <= 0) { reg.e += 1; }
+                /* set g e        */ if (--skip <= 0) { reg.g = reg.e; }
+                /* sub g b        */ if (--skip <= 0) { reg.g -= reg.b; }
+                /* jnz g -8       */ if (--skip <= 0) { if (reg.g !== 0) { skip = 24; } }
+                /* sub d -1       */ if (--skip <= 0) { reg.d += 1; }
+                /* set g d        */ if (--skip <= 0) { reg.g = reg.d;  }
+                /* sub g b        */ if (--skip <= 0) { reg.g -= reg.b; }
+                /* jnz g -13      */ if (--skip <= 0) { if (reg.g !== 0) { skip = 19; } }
+                /* jnz f 2        */ if (--skip <= 0) { if (reg.f !== 0) { skip = 2; } }
+                /* sub h -1       */ if (--skip <= 0) { reg.h += 1; }
+                /* set g b        */ if (--skip <= 0) { reg.g = reg.b; }
+                /* sub g c        */ if (--skip <= 0) { reg.g -= reg.c; }
+                /* jnz g 2        */ if (--skip <= 0) { if (reg.g !== 0) { skip = 2; } }
+                /* jnz 1 3        */ if (--skip <= 0) { /*skip = 3;*/ console.log("exiting!"); break; }
+                /* sub b -17      */ if (--skip <= 0) { reg.b -= 17; }
+                /* jnz 1 -23      */ if (--skip <= 0) { skip = 9; }
+                }    
+
+                return reg["h"];
             }
-        }]*/
+        }]
     };
 }(window.aoc = window.aoc || {days:{}}));
