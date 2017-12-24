@@ -76,38 +76,9 @@
                 ` },
             ],
             getSolution: data => {
-                let pieces = data
-                    .split(/\r?\n/g)
-                    .map(l => l.trim())
-                    .filter(l => !!l)
-                    .map(l => { return { a: parseInt(l.split("/")[0], 10), b: parseInt(l.split("/")[1], 10) }});
-                
-                function getExtendedBridges(bridge, pieces, connector) {
-                    let bridges = [];
-
-                    for (let i = 0; i < pieces.length; i++) {
-                        if (pieces[i].a === connector || pieces[i].b === connector) {
-                            let newBridge = {
-                                weight: bridge.weight + pieces[i].a + pieces[i].b,
-                                chain: bridge.chain.concat([pieces[i]])
-                            };
-                            
-                            bridges.push(newBridge);
-
-                            let leftpieces = pieces.filter((p,idx) => idx !== i);
-                            let newConnector = pieces[i].a === connector ? pieces[i].b : pieces[i].a;
-
-                            getExtendedBridges(newBridge, leftpieces, newConnector)
-                                .forEach(b => bridges.push(b));
-                        }
-                    }
-
-                    return bridges;
-                }
-
-                let bridges = getExtendedBridges({ weight: 0, chain: [{a:0,b:0}]}, pieces, 0);
-
-                return bridges.sort((a,b) => b.weight - a.weight)[0].weight;
+                let pieces = getPiecesFrom(data);
+                let bridges = getExtendedBridges({ strength: 0, chainLength: 0 }, pieces, 0);
+                return bridges.sort((a,b) => b.strength - a.strength)[0].strength;
             }
         },
 
@@ -127,43 +98,59 @@
                 ` },
             ],
             getSolution: data => {
-                let pieces = data
-                    .split(/\r?\n/g)
-                    .map(l => l.trim())
-                    .filter(l => !!l)
-                    .map(l => { return { a: parseInt(l.split("/")[0], 10), b: parseInt(l.split("/")[1], 10) }});
-                
-                function getExtendedBridges(bridge, pieces, connector) {
-                    let bridges = [];
+                let pieces = getPiecesFrom(data);
+                let bridges = getExtendedBridges({ strength: 0, chainLength: 0 }, pieces, 0);
+                let maxlen = getMax(bridges.map(b => b.chainLength));
 
-                    for (let i = 0; i < pieces.length; i++) {
-                        if (pieces[i].a === connector || pieces[i].b === connector) {
-                            let newBridge = {
-                                weight: bridge.weight + pieces[i].a + pieces[i].b,
-                                chain: bridge.chain.concat([pieces[i]])
-                            };
-                            
-                            bridges.push(newBridge);
-
-                            let leftpieces = pieces.filter((p,idx) => idx !== i);
-                            let newConnector = pieces[i].a === connector ? pieces[i].b : pieces[i].a;
-
-                            getExtendedBridges(newBridge, leftpieces, newConnector)
-                                .forEach(b => bridges.push(b));
-                        }
-                    }
-
-                    return bridges;
-                }
-
-                let bridges = getExtendedBridges({ weight: 0, chain: [{a:0,b:0}]}, pieces, 0);
-
-                bridges = bridges.sort((a,b) => b.chain.length - a.chain.length);
-                let maxlen = bridges[0].chain.length;
-                
-                return bridges.filter(l => l.chain.length === maxlen).sort((a,b) => b.weight - a.weight)[0].weight;
-
+                return bridges
+                    .filter(l => l.chainLength === maxlen)
+                    .sort((a,b) => b.strength - a.strength)
+                    [0].strength;
             }
         }]
     };
+
+    function getExtendedBridges(bridge, pieces, connector) {
+        let bridges = [];
+
+        for (let i = 0; i < pieces.length; i++) {
+            if (pieces[i].a === connector || pieces[i].b === connector) {
+                let newBridge = {
+                    strength: bridge.strength + pieces[i].a + pieces[i].b,
+                    chainLength: bridge.chainLength + 1
+                };
+
+                bridges.push(newBridge);
+
+                let leftpieces = pieces.slice();
+                leftpieces.splice(i, 1);
+
+                let newConnector = pieces[i].a === connector ? pieces[i].b : pieces[i].a;
+
+                bridges = bridges.concat(getExtendedBridges(newBridge, leftpieces, newConnector));
+            }
+        }
+
+        return bridges;
+    }
+
+    function getPiecesFrom(data) {
+        return data
+            .split(/\r?\n/g)
+            .map(l => l.trim())
+            .filter(l => !!l)
+            .map(l => { return { a: parseInt(l.split("/")[0], 10), b: parseInt(l.split("/")[1], 10) }});
+    }
+
+    // Because Math.max.apply(..) will exceed call stack size...
+    function getMax(array) {
+        if (!Array.isArray(array) || array.length === 0) {
+            return undefined;
+        }
+        let max = array[0];
+        for (let i = 1; i < array.length; i++) {
+            max = array[i] > max ? array[i] : max;
+        }
+        return max;
+    }
 }(window.aoc = window.aoc || {days:{}}));
