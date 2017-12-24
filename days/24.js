@@ -111,25 +111,59 @@
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: 1994,
             testSets: [
-                { expectedAnswer: null, data: [] },
+                { expectedAnswer: 19, data: `
+                    0/2
+                    2/2
+                    2/3
+                    3/4
+                    3/5
+                    0/1
+                    10/1
+                    9/10
+                ` },
             ],
             getSolution: data => {
-                let input = data;
+                let pieces = data
+                    .split(/\r?\n/g)
+                    .map(l => l.trim())
+                    .filter(l => !!l)
+                    .map(l => { return { a: parseInt(l.split("/")[0], 10), b: parseInt(l.split("/")[1], 10) }});
+                
+                function getExtendedBridges(bridge, pieces, connector) {
+                    let bridges = [];
 
-                return "NOT FOUND";
-            }
-        }*/]
+                    for (let i = 0; i < pieces.length; i++) {
+                        if (pieces[i].a === connector || pieces[i].b === connector) {
+                            let newBridge = {
+                                weight: bridge.weight + pieces[i].a + pieces[i].b,
+                                chain: bridge.chain.concat([pieces[i]])
+                            };
+                            
+                            bridges.push(newBridge);
 
-        /*,bonusTests: [{
-            title: "placeholder",
-            test: assert => {
-                let result = "SOMETHING";
-                assert.strictEqual(result, "SOMETHING");
+                            let leftpieces = pieces.filter((p,idx) => idx !== i);
+                            let newConnector = pieces[i].a === connector ? pieces[i].b : pieces[i].a;
+
+                            getExtendedBridges(newBridge, leftpieces, newConnector)
+                                .forEach(b => bridges.push(b));
+                        }
+                    }
+
+                    return bridges;
+                }
+
+                let bridges = getExtendedBridges({ weight: 0, chain: [{a:0,b:0}]}, pieces, 0);
+
+                bridges = bridges.sort((a,b) => b.chain.length - a.chain.length);
+                let maxlen = bridges[0].chain.length;
+                
+                return bridges.filter(l => l.chain.length === maxlen).sort((a,b) => b.weight - a.weight)[0].weight;
+
             }
-        }]*/
+        }]
     };
 }(window.aoc = window.aoc || {days:{}}));
