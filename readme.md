@@ -36,7 +36,7 @@ Here's what I learned (or noticed) each day.
 21. TDD to the rescue when 2D array manipulation turns out to be *too* hard. ([Day 21: Fractal Art](http://adventofcode.com/2017/day/21))
 22. **Data Structures are more important than language features.** ([Day 22: Sporifica Virus](http://adventofcode.com/2017/day/22))
 23. I am *really* terrible at low-level code. ([Day 23: Coprocessor Conflagration](http://adventofcode.com/2017/day/23))
-24. ??? ([404](http://adventofcode.com/2017/day/24))
+24. Modern hardware "allows" you to write less-performant, more readable code. ([Day 24: Electromagnetic Moat](http://adventofcode.com/2017/day/24))
 25. ??? ([404](http://adventofcode.com/2017/day/25))
 
 ## Compendium Repo
