@@ -9,7 +9,7 @@
                 { expectedAnswer: null, data: [] },
             ],
             getSolution: data => {
-                let negtape = [], postape = [];
+                let negtape = [], postape = [0];
                 let cursor = 0;
 
                 function tapeset(cursor, value) {
@@ -113,7 +113,10 @@
                     if (step % 1e6 === 0) { console.log(step); }
                 }
 
+                //console.log(postape);
+                //console.log(negtape);
                 // NOT 8437585
+                // NOT 8437584
                 return negtape.reduce((a,b) => a+b, 0) + postape.reduce((a,b) => a+b, 0);
             }
         },
