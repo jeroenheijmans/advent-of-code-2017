@@ -9,7 +9,7 @@
                 { expectedAnswer: null, data: [] },
             ],
             getSolution: data => {
-                let negtape = [], postape = [0];
+                let negtape = [0], postape = [0];
                 let cursor = 0;
 
                 function tapeset(cursor, value) {
@@ -49,7 +49,7 @@
                     //     - Write the value 1.
                     //     - Move one slot to the left.
                     //     - Continue with state D.
-                    if (state === "B") {
+                    else if (state === "B") {
                         if (gettape(cursor) === 0) { tapeset(cursor, 1); cursor--; state = "A"; }
                         else { tapeset(cursor, 1); cursor--; state = "D"; }
                     }
@@ -63,7 +63,7 @@
                     //     - Write the value 0.
                     //     - Move one slot to the right.
                     //     - Continue with state C.
-                    if (state === "C") {
+                    else if (state === "C") {
                         if (gettape(cursor) === 0) { tapeset(cursor, 1); cursor++; state = "D"; }
                         else { tapeset(cursor, 0); cursor++; state = "C"; }
                     }
@@ -77,7 +77,7 @@
                     //     - Write the value 0.
                     //     - Move one slot to the right.
                     //     - Continue with state E.
-                    if (state === "D") {
+                    else if (state === "D") {
                         if (gettape(cursor) === 0) { tapeset(cursor, 0); cursor--; state = "B"; }
                         else { tapeset(cursor, 0); cursor++; state = "E"; }
                     }
@@ -91,7 +91,7 @@
                     //     - Write the value 1.
                     //     - Move one slot to the left.
                     //     - Continue with state F.
-                    if (state === "E") {
+                    else if (state === "E") {
                         if (gettape(cursor) === 0) { tapeset(cursor, 1); cursor++; state = "C"; }
                         else { tapeset(cursor, 1); cursor--; state = "F"; }
                     }
@@ -105,7 +105,7 @@
                     //     - Write the value 1.
                     //     - Move one slot to the right.
                     //     - Continue with state A.
-                    if (state === "F") {
+                    else if (state === "F") {
                         if (gettape(cursor) === 0) { tapeset(cursor, 1); cursor--; state = "E"; }
                         else { tapeset(cursor, 0); cursor++; state = "A"; }
                     }
@@ -113,10 +113,9 @@
                     if (step % 1e6 === 0) { console.log(step); }
                 }
 
-                //console.log(postape);
-                //console.log(negtape);
                 // NOT 8437585
                 // NOT 8437584
+                // NOT 2812529
                 return negtape.reduce((a,b) => a+b, 0) + postape.reduce((a,b) => a+b, 0);
             }
         },
