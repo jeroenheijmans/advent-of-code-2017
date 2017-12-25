@@ -161,25 +161,15 @@
             }
         },
 
-        /*{
+        {
             title: "Puzzle 2",
-            expectedAnswer: null,
+            expectedAnswer: true,
             testSets: [
-                { expectedAnswer: null, data: [] },
+                
             ],
             getSolution: data => {
-                let input = data;
-
-                return "NOT FOUND";
+                return true; // !!
             }
-        }*/]
-
-        /*,bonusTests: [{
-            title: "placeholder",
-            test: assert => {
-                let result = "SOMETHING";
-                assert.strictEqual(result, "SOMETHING");
-            }
-        }]*/
+        }]
     };
 }(window.aoc = window.aoc || {days:{}}));
