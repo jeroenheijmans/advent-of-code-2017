@@ -9,26 +9,15 @@
                 { expectedAnswer: 3, data: "test" },
             ],
             getSolution: data => {
-                let negtape = [0], postape = [0];
+                let tape = new Map();
                 let cursor = 0;
-
-                function tapeset(cursor, value) {
-                    if (cursor < 0) { negtape[-cursor] = value; }
-                    else { postape[cursor] = value; }
-                }
-                
-                function gettape(cursor) {
-                    return cursor < 0 
-                        ? (negtape[-cursor] || 0) 
-                        : (postape[cursor] || 0);
-                }
 
                 function testcase() {
                     // Begin in state A.
                     let state = "A";
+
                     // Perform a diagnostic checksum after 6 steps.
-                    let maxsteps = 6;
-                    for (let step = 0; step < maxsteps; step++) {
+                    for (let step = 0; step < 6; step++) {
     
                         // In state A:
                         // If the current value is 0:
@@ -40,8 +29,8 @@
                         //     - Move one slot to the left.
                         //     - Continue with state B.
                         if (state === "A") {
-                            if (gettape(cursor) === 0) { tapeset(cursor, 1); cursor++; state = "B"; }
-                            else { tapeset(cursor, 0); cursor--; state = "B"; }
+                            if ((tape.get(cursor) || 0) === 0) { tape.set(cursor++, 1); state = "B"; }
+                            else { tape.set(cursor--, 0); state = "B"; }
                         }
 
                         // In state B:
@@ -54,8 +43,8 @@
                         //     - Move one slot to the right.
                         //     - Continue with state A.
                         else if (state === "B") {
-                            if (gettape(cursor) === 0) { tapeset(cursor, 1); cursor--; state = "A"; }
-                            else { tapeset(cursor, 1); cursor++; state = "A"; }
+                            if ((tape.get(cursor) || 0) === 0) { tape.set(cursor--, 1); state = "A"; }
+                            else { tape.set(cursor++, 1); state = "A"; }
                         }
                     }
                 }
@@ -63,9 +52,10 @@
                 function actual() {
                     // Begin in state A.
                     let state = "A";
+
                     // Perform a diagnostic checksum after 12656374 steps.
-                    let maxsteps = 12656374;
-                    for (let step = 0; step < maxsteps; step++) {
+                    for (let step = 0; step < 12656374; step++) {
+
                         // In state A:
                         // If the current value is 0:
                         //     - Write the value 1.
@@ -76,8 +66,8 @@
                         //     - Move one slot to the left.
                         //     - Continue with state C.
                         if (state === "A") {
-                            if (gettape(cursor) === 0) { tapeset(cursor, 1); cursor++; state = "B"; }
-                            else { tapeset(cursor, 0); cursor--; state = "C"; }
+                            if ((tape.get(cursor) || 0) === 0) { tape.set(cursor++, 1); state = "B"; }
+                            else { tape.set(cursor--, 0); state = "C"; }
                         }
 
                         // In state B:
@@ -90,8 +80,8 @@
                         //     - Move one slot to the left.
                         //     - Continue with state D.
                         else if (state === "B") {
-                            if (gettape(cursor) === 0) { tapeset(cursor, 1); cursor--; state = "A"; }
-                            else { tapeset(cursor, 1); cursor--; state = "D"; }
+                            if ((tape.get(cursor) || 0) === 0) { tape.set(cursor--, 1); state = "A"; }
+                            else { tape.set(cursor--, 1); state = "D"; }
                         }
 
                         // In state C:
@@ -104,8 +94,8 @@
                         //     - Move one slot to the right.
                         //     - Continue with state C.
                         else if (state === "C") {
-                            if (gettape(cursor) === 0) { tapeset(cursor, 1); cursor++; state = "D"; }
-                            else { tapeset(cursor, 0); cursor++; state = "C"; }
+                            if ((tape.get(cursor) || 0) === 0) { tape.set(cursor++, 1); state = "D"; }
+                            else { tape.set(cursor++, 0); state = "C"; }
                         }
 
                         // In state D:
@@ -118,8 +108,8 @@
                         //     - Move one slot to the right.
                         //     - Continue with state E.
                         else if (state === "D") {
-                            if (gettape(cursor) === 0) { tapeset(cursor, 0); cursor--; state = "B"; }
-                            else { tapeset(cursor, 0); cursor++; state = "E"; }
+                            if ((tape.get(cursor) || 0) === 0) { tape.set(cursor--, 0); state = "B"; }
+                            else { tape.set(cursor++, 0); state = "E"; }
                         }
 
                         // In state E:
@@ -132,8 +122,8 @@
                         //     - Move one slot to the left.
                         //     - Continue with state F.
                         else if (state === "E") {
-                            if (gettape(cursor) === 0) { tapeset(cursor, 1); cursor++; state = "C"; }
-                            else { tapeset(cursor, 1); cursor--; state = "F"; }
+                            if ((tape.get(cursor) || 0) === 0) { tape.set(cursor++, 1); state = "C"; }
+                            else { tape.set(cursor--, 1); state = "F"; }
                         }
 
                         // In state F:
@@ -146,29 +136,25 @@
                         //     - Move one slot to the right.
                         //     - Continue with state A.
                         else if (state === "F") {
-                            if (gettape(cursor) === 0) { tapeset(cursor, 1); cursor--; state = "E"; }
-                            else { tapeset(cursor, 0); cursor++; state = "A"; }
+                            if ((tape.get(cursor) || 0) === 0) { tape.set(cursor--, 1); state = "E"; }
+                            else { tape.set(cursor++, 0); state = "A"; }
                         }
-
-                        // if (step % 1e6 === 0) { console.log(step); }
                     }
                 }
 
                 if (data === "actual") { actual(); } 
                 else { testcase(); }
                 
-                return negtape.reduce((a,b) => a+b, 0) + postape.reduce((a,b) => a+b, 0);
+                return [...tape.values()].reduce((a,b) => a+b, 0);
             }
         },
 
         {
             title: "Puzzle 2",
             expectedAnswer: true,
-            testSets: [
-                
-            ],
+            testSets: [],
             getSolution: data => {
-                return true; // !!
+                return true; // :-)
             }
         }]
     };
