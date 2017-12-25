@@ -28,7 +28,7 @@ Here's what I learned (or noticed) each day.
 13. Transforming problems into other problems before solving them can help. ([Day 13: Packet Scanners](http://adventofcode.com/2017/day/13))
 14. Don't throw away code. ([Day 14: Disk Defragmentation](http://adventofcode.com/2017/day/14), Knot Hash reuse)
 15. **Learn from other people's solutions.** ([Day 15: Dueling Generators](http://adventofcode.com/2017/day/15))
-16. Scre you, off-by-one errors. Screw you n+1 times!! ([Day 16: Permutation Promenade](http://adventofcode.com/2017/day/16))
+16. Screw you, off-by-one errors. Screw you n+1 times!! ([Day 16: Permutation Promenade](http://adventofcode.com/2017/day/16))
 17. Circular buffers take some practice. ([Day 17: Spinlock](http://adventofcode.com/2017/day/17))
 18. Emulating low-level code is a thing apart. ([Day 18: Duet](http://adventofcode.com/2017/day/18))
 19. Advent of Code is aMAZEing! ([Day 19: A Series of Tubes](http://adventofcode.com/2017/day/19))
@@ -37,7 +37,7 @@ Here's what I learned (or noticed) each day.
 22. **Data Structures are more important than language features.** ([Day 22: Sporifica Virus](http://adventofcode.com/2017/day/22))
 23. I am *really* terrible at low-level code. ([Day 23: Coprocessor Conflagration](http://adventofcode.com/2017/day/23))
 24. Modern hardware "allows" you to write less-performant, more readable code. ([Day 24: Electromagnetic Moat](http://adventofcode.com/2017/day/24))
-25. ??? ([404](http://adventofcode.com/2017/day/25))
+25. Private Leaderboards are equal parts Skill, Vigilance, Timezone, Reading Comprehension, Free Time, and Fun :D ([Day 25: The Halting Problem](http://adventofcode.com/2017/day/25))
 
 ## Compendium Repo
 
