@@ -18,7 +18,7 @@
 
                     // Perform a diagnostic checksum after 6 steps.
                     for (let step = 0; step < 6; step++) {
-    
+
                         // In state A:
                         // If the current value is 0:
                         //     - Write the value 1.
@@ -142,9 +142,9 @@
                     }
                 }
 
-                if (data === "actual") { actual(); } 
+                if (data === "actual") { actual(); }
                 else { testcase(); }
-                
+
                 return [...tape.values()].reduce((a,b) => a+b, 0);
             }
         },

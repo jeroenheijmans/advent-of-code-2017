@@ -47,7 +47,7 @@
                         result++;
                     }
                 }
-                
+
                 return result;
             }
         }]

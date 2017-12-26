@@ -189,12 +189,12 @@
                     const getRegisterOrValue = n => Number.isInteger(n) ? n : registers[n];
 
                     this.step = function() {
-                        if (!this.isTerminated) {                      
+                        if (!this.isTerminated) {
                             pos += this.act(instructions[pos]);
                             if (pos < 0 || pos >= instructions.length) {
                                 this.isTerminated = true;
                             }
-                        }                    
+                        }
                     }
 
                     this.clearSndBuffer = function() {

@@ -62,7 +62,7 @@
                         r[c] = 0;
                         return r;
                     }, {});
-                    
+
                 const getRegisterOrValue = n => Number.isInteger(n) ? n : registers[n];
 
                 let result = 0;
@@ -72,7 +72,7 @@
                 while (i++ < 1e6) {
                     let {op, x, y} = instructions[pos];
                     let incr = 0;
-                    
+
                     switch (op) {
                         case "set":
                             registers[x] = getRegisterOrValue(y);
@@ -125,7 +125,7 @@
                 // By @Saka7 at https://stackoverflow.com/a/40200710/419956
                 const isPrime = num => {
                     for(let i = 2, s = Math.sqrt(num); i <= s; i++)
-                        if(num % i === 0) return false; 
+                        if(num % i === 0) return false;
                     return num !== 1;
                 }
 
@@ -177,7 +177,7 @@
                 r[c] = initialRegisters[c] || 0;
                 return r;
             }, {});
-        
+
         function getRegisterOrValue(n) {
             return Number.isInteger(n) ? n : registers[n];
         }
@@ -194,21 +194,21 @@
                 case "sub":
                     registers[x] -= getRegisterOrValue(y);
                     return 1;
-                    
+
                 case "add":
                     registers[x] += getRegisterOrValue(y);
                     return 1;
-                    
+
                 case "mul":
                     registers[x] *= getRegisterOrValue(y);
                     return 1;
-                    
+
                 case "jnz":
                     if (getRegisterOrValue(x) !== 0) {
                         return getRegisterOrValue(y);
                     }
                     return 1;
-                    
+
                 default:
                     throw `Operation ${op} not found`;
             }

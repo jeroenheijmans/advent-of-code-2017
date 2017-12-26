@@ -1262,11 +1262,11 @@
                 while (loop++ < 1000 && relevantNodes.length > 1) {
                     relevantNodes = data
                         .filter(disc => disc.holds.length > 0);
-                    
+
                     let removedNames = data
                         .filter(disc => disc.holds.length === 0)
                         .map(disc => disc.name);
-                    
+
                     relevantNodes.forEach(node => {
                         node.holds = node.holds.filter(name => removedNames.indexOf(name) < 0)
                     });
@@ -1352,7 +1352,7 @@
 
                 function getUnbalancedNode(target, parent) {
                     let childWeights = new Set(target.subWeights);
-                    
+
                     if (childWeights.size === 1) {
                         let x = getChildWeights(parent);
                         target.correctWeight = target.ownWeight + x.correctChildren[0].weight - x.incorrectChildren[0].weight;
@@ -1365,7 +1365,7 @@
                 }
 
                 let unbalancedNode = getUnbalancedNode(data[0], null);
-                
+
                 return unbalancedNode.correctWeight;
             }
         }]

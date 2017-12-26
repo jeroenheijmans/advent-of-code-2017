@@ -10,7 +10,7 @@
                 { expectedAnswer: 3, data: 12 },
                 { expectedAnswer: 2, data: 23 },
                 { expectedAnswer: 31, data: 1024 },
-                
+
                 { expectedAnswer: 1, data: 2 },
                 { expectedAnswer: 1, data: 4 },
                 { expectedAnswer: 1, data: 6 },
@@ -51,7 +51,7 @@
                 // Apologies, but after a long day of (Sunday) work I couldn't think
                 // of a "good" solution, so I'll just imperatively crunch to the right
                 // answer like this... :'(
-                
+
                 var grid = [
                     [0,0,0,0,0,0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -84,11 +84,11 @@
 
                 while (x < 12 && y < 12 && x > 0 && y > 0) {
                     grid[x][y] = getSumFor(x, y);
-                    
+
                     if (grid[x][y] > data) {
                         return grid[x][y];
                     }
-                    
+
                     if (grid[x-1][y] !== 0 && grid[x][y-1] === 0) {
                         y--;
                     } else if (grid[x-1][y] === 0 && grid[x][y+1] !== 0) {

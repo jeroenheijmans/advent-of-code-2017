@@ -3,13 +3,13 @@
         return input
             .split("")
             .map(c => parseInt(c, 16).toString(2))
-            .map(s => ("000" + s).substr(-4))        
+            .map(s => ("000" + s).substr(-4))
             .join("");
     }
 
     function getKnotHashGrid(data) {
         let grid = [];
-        
+
         for (let i = 0; i < 128; i++) {
             let hash = aoc.getKnotHash(`${data}-${i}`);
             let bin = convertToBinaryText(hash);
@@ -47,11 +47,11 @@
                 function recursiveEliminateFrom(x,y) {
                     if (grid[x][y] === 1) {
                         grid[x][y] = 0;
-                     
+
                         if (x > 0) { recursiveEliminateFrom(x-1, y); }
                         if (y > 0) { recursiveEliminateFrom(x, y-1); }
                         if (x < 127) { recursiveEliminateFrom(x+1, y); }
-                        if (y < 127) { recursiveEliminateFrom(x, y+1); }                        
+                        if (y < 127) { recursiveEliminateFrom(x, y+1); }
                     }
                 }
 

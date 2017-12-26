@@ -82,13 +82,13 @@
 
                 for (let i=0; i < billion; i++) {
                     let position = dancers.join("");
-                    if (startingPositions.indexOf(position) >= 0) { 
+                    if (startingPositions.indexOf(position) >= 0) {
                         return startingPositions[billion % i];
                     }
-                    startingPositions.push(position);                    
+                    startingPositions.push(position);
                     dancers = dance(dancers, moves);
                 }
-                
+
                 return dancers.join("");
             }
         }]

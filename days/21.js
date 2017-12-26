@@ -142,8 +142,8 @@
                 // YUCK (but pragmatic)
                 let isTestPuzzle = data.split(/\r?\n/g).map(r => r.trim()).filter(m => !!m).length === 2;
                 let iterations = isTestPuzzle ? 2 : 5;
-                
-                for (let idx = 0; idx < iterations; idx++) {                    
+
+                for (let idx = 0; idx < iterations; idx++) {
                     let blocks = chop(grid);
 
                     for (let i = 0; i < blocks.length; i++) {
@@ -173,7 +173,7 @@
                 // TODO: Remove this hack (but it requires plenty of perf tweaking because
                 // currently it takes around a minute to complete...)
                 return 3018423;
-                
+
                 for (let idx = 0; idx < iterations; idx++) {
                     let blocks = chop(grid);
 
@@ -367,7 +367,7 @@
             test: assert => {
                 // Taken from the debugger, this gave problems at one time...
                 let blocks = JSON.parse('[[["#","#","#"],[".","#","."],["#",".","#"]],[["#","#","#"],[".","#","."],["#",".","#"]],[["#",".","#"],["#","#","."],[".",".","."]],[[".",".","#"],["#","#","."],["#","#","."]]]');
-                
+
                 // Smoke test:
                 let grid = recombine(blocks);
                 var isSmoking = grid.some(row => row.some(cell => cell !== "#" && cell !== "."));
@@ -501,10 +501,10 @@
                 map[i.pattern] = i;
                 return map;
             }, {});
-            
+
             this.getOperation = function(block) {
                 let pattern = "";
-                
+
                 for (let i = 0; i < 4; i++) {
 
                     pattern = patternize(block);
@@ -522,7 +522,7 @@
                     block = rot90(block);
                     if (instructions.hasOwnProperty(pattern)) { return instructions[pattern]; }
                 }
-                
+
                 throw "Eek!";
             }
 

@@ -19,7 +19,7 @@
         }
         return currentSet;
     }
-        
+
     aoc.days["12"] = {
         actualInput: `
             0 <-> 950, 1039

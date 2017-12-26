@@ -24,7 +24,7 @@
                     data[idx]++;
                     idx += jump;
                     steps++;
-                } 
+                }
 
                 return steps;
             }
@@ -52,7 +52,7 @@
                     data[idx] >= 3 ? data[idx]-- : data[idx]++;
                     idx += jump;
                     steps++;
-                } 
+                }
 
                 return steps;
             }

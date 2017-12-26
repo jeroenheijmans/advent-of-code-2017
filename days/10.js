@@ -32,7 +32,7 @@
                     at = (position + x) % result.length;
                     result[at] = reversedSection[x];
                 }
-       
+
                 position = (position + loopLength + skip) % range;
                 skip++;
             }
