@@ -43,3 +43,13 @@ Here's what I learned (or noticed) each day.
 
 I've created [a Google Chrome Extension to spice up your private leaderboard page with graphs](https://chrome.google.com/webstore/detail/ipbomkmbokofodhhjpipflmdplipblbe).
 It is [open source](https://github.com/jeroenheijmans/advent-of-code-charts) if you want to contribute!
+
+Here's direct links to every year's solutions I have so far:
+
+- Advent of Code 2015 solutions: not available yet!
+- Advent of Code 2016 solutions: not available yet!
+- [Advent of Code 2017 solutions](https://github.com/jeroenheijmans/advent-of-code-2017), in JavaScript
+- [Advent of Code 2018 solutions](https://github.com/jeroenheijmans/advent-of-code-2018), in C#
+- [Advent of Code 2019 solutions](https://github.com/jeroenheijmans/advent-of-code-2019), in Python
+- [Advent of Code 2020 solutions](https://github.com/jeroenheijmans/advent-of-code-2020), in TypeScript
+- [Advent of Code 2021 solutions](https://github.com/jeroenheijmans/advent-of-code-2021), in PHP
